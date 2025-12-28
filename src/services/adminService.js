@@ -23,6 +23,11 @@ const AdminService = {
         const { data } = await api.put(`/api/admin/users/${id}`, { enabled: true });
         return data;
     }
+    ,
+    assignCourse: async (userId, courseId) => {
+        const { data } = await api.put(`/api/admin/users/${userId}/assign-course/${courseId}`);
+        return data;
+    }
 };
 
 export default AdminService;

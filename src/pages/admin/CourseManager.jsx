@@ -2,14 +2,114 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom'; // Para navegar a Sesiones
 import CourseService from '../../services/courseService';
 import api from '../../services/api';
-import { Plus, Trash2, Edit2, BookOpen, UploadCloud, Loader, Image, Calendar } from 'lucide-react';
+import { Plus, Trash2, Edit2, BookOpen, UploadCloud, Loader, Image, Calendar, Users } from 'lucide-react';
+import EnrolledStudentsModal from './EnrolledStudentsModal';
+const user = JSON.parse(localStorage.getItem("user"));
+const isAdmin =
+  user?.roles?.includes("ADMIN") ||
+  user?.roles?.includes("ROLE_ADMIN") ||
+  user?.role === "ADMIN" ||
+  user?.authorities?.some(a => a.authority === "ROLE_ADMIN"); 
 
 const CoursesManager = () => {
+    useEffect(() => {
+        console.log('CoursesManager isAdmin =', isAdmin, 'user=', JSON.parse(localStorage.getItem('user')));
+    }, []);
     const [courses, setCourses] = useState([]);
     const [categories, setCategories] = useState([]);
     const [showModal, setShowModal] = useState(false);
     const [uploading, setUploading] = useState(false);
     const [editingId, setEditingId] = useState(null);
+
+    const [showAssignModal, setShowAssignModal] = useState(false);
+const [selectedCourse, setSelectedCourse] = useState(null);
+const [instructors, setInstructors] = useState([]);
+    const [showStudentsModalAdmin, setShowStudentsModalAdmin] = useState(false);
+    const [studentsAdmin, setStudentsAdmin] = useState([]);
+    const [studentsAdminLoading, setStudentsAdminLoading] = useState(false);
+    const [selectedInstructorId, setSelectedInstructorId] = useState(null);
+        const [instructorsLoading, setInstructorsLoading] = useState(false);
+        const [instructorsError, setInstructorsError] = useState(null);
+        // track which instructor id is being assigned (so only that button shows loading)
+        const [assigning, setAssigning] = useState(null);
+const openAssignInstructorModal = async (course) => {
+    setSelectedCourse(course);
+    setShowAssignModal(true);
+        setInstructors([]);
+        setInstructorsError(null);
+        setInstructorsLoading(true);
+        try {
+            let res;
+            try {
+                res = await api.get("/api/users?role=INSTRUCTOR");
+            } catch (e) {
+                // fallback to admin endpoint if available
+                res = await api.get("/api/admin/users?role=INSTRUCTOR");
+            }
+            const payload = res.data;
+                const list = Array.isArray(payload) ? payload : (payload?.content || payload?.data || []);
+                // mark which users actually have instructor role (safety: backend may return all users)
+                const computeDisplayName = (u) => {
+                    if (!u) return '';
+                    const candidates = [];
+                    if (u.displayName) candidates.push(u.displayName);
+                    if (u.full_name) candidates.push(u.full_name);
+                    if (u.fullName) candidates.push(u.fullName);
+                    if (u.name) candidates.push(u.name);
+                    if (u.username) candidates.push(u.username);
+                    if (u.firstName && u.lastName) candidates.push(`${u.firstName} ${u.lastName}`);
+                    if (u.first_name && u.last_name) candidates.push(`${u.first_name} ${u.last_name}`);
+                    if (u.given_name && u.family_name) candidates.push(`${u.given_name} ${u.family_name}`);
+                    if (u.email) {
+                        const beforeAt = String(u.email).split('@')[0];
+                        if (beforeAt) candidates.push(beforeAt);
+                    }
+                    return (candidates.find(s => s && String(s).trim()) || '').toString().trim();
+                };
+
+                const listWithFlag = (list || []).map(u => {
+                    const roles = u?.roles || u?.authorities || [];
+                    const hasInstructorRole = Array.isArray(roles) && roles.some(r => {
+                        if (!r) return false;
+                        if (typeof r === 'string') return r.includes('INSTRUCTOR');
+                        return (r.name && String(r.name).includes('INSTRUCTOR')) || (r.authority && String(r.authority).includes('INSTRUCTOR'));
+                    }) || u?.role === 'INSTRUCTOR';
+                    const displayName = computeDisplayName(u);
+                    return { ...u, isInstructor: !!hasInstructorRole, displayName };
+                });
+                const onlyInstructors = (listWithFlag || []).filter(u => u.isInstructor);
+                setInstructors(onlyInstructors);
+                setSelectedInstructorId(onlyInstructors[0]?.id || null);
+        } catch (err) {
+            console.error('Error loading instructors', err, err?.response);
+            const status = err?.response?.status;
+            const msg = err?.response?.data?.message || err.message || 'Error cargando instructores';
+            setInstructorsError(`Error cargando instructores${status ? ` (status ${status})` : ''}: ${msg}`);
+        } finally {
+            setInstructorsLoading(false);
+        }
+};
+
+const assignInstructor = async (instructorId) => {
+    if (!instructorId) return alert('Selecciona un instructor');
+    setAssigning(instructorId);
+    try {
+        // Backend expects PUT /api/courses/{id}/assign-instructor/{instructorId}
+        const res = await api.put(`/api/courses/${selectedCourse.id}/assign-instructor/${instructorId}`);
+        console.log('assign response', res);
+        alert(res?.data?.message || 'Instructor asignado');
+        setShowAssignModal(false);
+        setSelectedCourse(null);
+        setSelectedInstructorId(null);
+        loadData();
+    } catch (e) {
+        console.error('Error assigning instructor', e, e?.response);
+        const status = e?.response?.status;
+        const msg = e?.response?.data?.message || e?.response?.data || e.message || 'Error al asignar instructor';
+        setInstructorsError(`Error al asignar instructor${status ? ` (status ${status})` : ''}: ${msg}`);
+        alert('Error al asignar instructor — revisa el modal');
+    } finally { setAssigning(null); }
+};
 
     const initialForm = { title: '', description: '', price: '', level: 'PRINCIPIANTE', imageUrl: '', categoryId: 1 };
     const [formData, setFormData] = useState(initialForm);
@@ -94,8 +194,14 @@ const CoursesManager = () => {
                             <span className="text-xs font-bold text-formex-orange uppercase mb-1 tracking-wide">{course.category?.name}</span>
                             <h3 className="font-bold text-gray-900 mb-2 line-clamp-1 text-lg">{course.title}</h3>
                             <p className="text-xs text-gray-500 mb-4 flex-1 line-clamp-2 leading-relaxed">{course.description}</p>
-
                             <div className="flex justify-end gap-2 pt-3 border-t border-gray-50">
+
+            
+              
+   
+   
+
+                        
                                 {/* --- NUEVO BOTÓN: GESTIONAR SESIONES --- */}
                                 <Link
                                     to={`/admin/courses/${course.id}/sessions`}
@@ -106,6 +212,28 @@ const CoursesManager = () => {
                                 </Link>
                                 {/* -------------------------------------- */}
 
+                                <button onClick={() => openAssignInstructorModal(course)} className="p-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors" title="Asignar Instructor">
+                                    <BookOpen size={18}/>
+                                </button>
+
+                                <button onClick={async () => {
+                                    
+                                    setSelectedCourse(course);
+                                    setShowStudentsModalAdmin(true);
+                                    setStudentsAdminLoading(true);
+                                    try {
+                                        const data = await CourseService.getCourseStudents(course.id);
+                                        setStudentsAdmin(Array.isArray(data) ? data : (data?.data || data?.content || []));
+                                    } catch (err) {
+                                        console.error('Error cargando alumnos (admin)', err);
+                                        setStudentsAdmin([]);
+                                    } finally {
+                                        setStudentsAdminLoading(false);
+                                    }
+                                }} className="p-2 text-gray-700 hover:bg-gray-50 rounded-lg transition-colors" title="Ver Alumnos">
+                                    <Users size={18}/>
+                                </button>
+
                                 <button onClick={() => handleOpenEdit(course)} className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors" title="Editar"><Edit2 size={18}/></button>
                                 <button onClick={() => handleDelete(course.id)} className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors" title="Eliminar"><Trash2 size={18}/></button>
                             </div>
@@ -113,6 +241,55 @@ const CoursesManager = () => {
                     </div>
                 ))}
             </div>
+
+            {showAssignModal && (
+                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 backdrop-blur-sm">
+                    <div className="bg-white rounded-2xl p-6 max-w-2xl w-full max-h-[80vh] overflow-y-auto shadow-2xl">
+                        <div className="flex justify-between items-center mb-4">
+                            <h3 className="text-xl font-bold">Instructores</h3>
+                            <button onClick={() => { setShowAssignModal(false); setSelectedCourse(null); }} className="text-gray-500 hover:text-gray-700">Cerrar</button>
+                        </div>
+                        <p className="text-sm text-gray-600 mb-4">Curso: {selectedCourse?.title}</p>
+
+                        <div className="flex flex-col divide-y">
+                            {instructorsLoading ? (
+                                <div className="py-6 flex items-center justify-center">
+                                    <Loader className="animate-spin text-formex-orange" />
+                                </div>
+                            ) : instructorsError ? (
+                                <div className="py-4 text-sm text-red-500">{instructorsError}</div>
+                            ) : instructors.length === 0 ? (
+                                <p className="py-4 text-sm text-gray-500">No hay instructores registrados.</p>
+                            ) : (
+                                instructors.map(i => (
+                                    <div key={i.id} className="py-3 flex items-center justify-between">
+                                        <div className="min-w-0">
+                                            <div className="font-semibold truncate">{i.displayName}</div>
+                                            <div className="text-xs text-gray-500 truncate">{i.email}</div>
+                                        </div>
+                                        <div className="flex items-center gap-2 pl-4">
+                                            <button disabled={assigning && assigning !== i.id} onClick={async () => { setSelectedInstructorId(i.id); await assignInstructor(i.id); }} className="py-2 px-3 bg-formex-orange text-white rounded-lg whitespace-nowrap">{assigning === i.id ? 'Asignando...' : 'Asignar'}</button>
+                                        </div>
+                                    </div>
+                                ))
+                            )}
+                        </div>
+                    </div>
+                </div>
+            )}
+            {/* Students Modal (Admin) */}
+          {showStudentsModalAdmin && (
+            <EnrolledStudentsModal
+             courseId={selectedCourse?.id}
+           students={studentsAdmin}
+           onClose={() => {
+        setShowStudentsModalAdmin(false);
+       setSelectedCourse(null);
+    }}
+  />
+)}
+
+       
 
             {showModal && (
                 <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 backdrop-blur-sm">
@@ -149,7 +326,11 @@ const CoursesManager = () => {
                 </div>
             )}
         </div>
+        
     );
+
+    
 };
+
 
 export default CoursesManager;

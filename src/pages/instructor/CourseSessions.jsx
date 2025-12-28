@@ -15,9 +15,20 @@ const CourseSessions = () => {
     const [formData, setFormData] = useState({
         title: '',
         description: '',
-        startTime: '', // datetime-local string
+        date: '', // YYYY-MM-DD
+        time: '', // HH:MM
         meetingLink: ''
     });
+
+    const generateHalfHourOptions = () => {
+        const opts = [];
+        for (let h = 7; h <= 23; h++) {
+            const hh = String(h).padStart(2, '0');
+            opts.push(`${hh}:00`);
+            if (h !== 23) opts.push(`${hh}:30`);
+        }
+        return opts;
+    };
 
     useEffect(() => {
         loadData();
@@ -39,9 +50,14 @@ const CourseSessions = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            await SessionService.createSession({ ...formData, courseId });
+            let startTime = null;
+            if (formData.date) {
+                const t = formData.time && formData.time.trim() !== '' ? formData.time : '00:00';
+                startTime = `${formData.date}T${t}:00`;
+            }
+            await SessionService.createSession({ title: formData.title, description: formData.description, startTime, meetingLink: formData.meetingLink, courseId });
             setShowModal(false);
-            setFormData({ title: '', description: '', startTime: '', meetingLink: '' });
+            setFormData({ title: '', description: '', date: '', time: '', meetingLink: '' });
             loadData();
             alert("¡Clase programada!");
         } catch (error) {
@@ -50,7 +66,7 @@ const CourseSessions = () => {
     };
 
     const handleDelete = async (id) => {
-        if(confirm("¿Borrar esta sesión?")) {
+        if (confirm("¿Borrar esta sesión?")) {
             await SessionService.deleteSession(id);
             loadData();
         }
@@ -75,7 +91,6 @@ const CourseSessions = () => {
             </header>
 
             <main className="max-w-5xl mx-auto p-4 py-8">
-
                 {sessions.length === 0 ? (
                     <div className="text-center py-20 bg-white rounded-xl border border-dashed border-gray-300">
                         <Calendar className="mx-auto text-gray-300 mb-4" size={48}/>
@@ -103,14 +118,35 @@ const CourseSessions = () => {
                                         <p className="text-gray-500 text-sm mt-2">{session.description}</p>
                                     </div>
                                 </div>
-                                <button onClick={() => handleDelete(session.id)} className="text-gray-400 hover:text-red-500 p-2 hover:bg-red-50 rounded transition-colors self-end md:self-auto">
-                                    <Trash2 size={18}/>
-                                </button>
+
+                                <div className="flex gap-2 mt-2">
+                                    <Link 
+                                        to={`/instructor/course/${courseId}/session/${session.id}/materials`} 
+                                        className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 flex items-center gap-1 font-bold"
+                                    >
+                                        <Plus size={16}/> Ver materiales
+                                    </Link>
+                                </div>
+
+
+                                {/* Acciones: botón Asistencia agregado aquí */}
+                                <div className="flex items-center gap-2 self-end md:self-auto">
+                                    <Link
+                                        to={`/instructor/course/${courseId}/attendance/${session.id}`}
+                                        className="mr-2 px-3 py-2 bg-orange-500 text-white rounded-lg text-sm hover:bg-orange-600 transition-colors flex items-center gap-2 whitespace-nowrap"
+                                        title="Ver Asistencia"
+                                    >
+                                        Asistencia
+                                    </Link>
+
+                                    <button onClick={() => handleDelete(session.id)} className="text-gray-400 hover:text-red-500 p-2 hover:bg-red-50 rounded transition-colors">
+                                        <Trash2 size={18}/>
+                                    </button>
+                                </div>
                             </div>
                         ))}
                     </div>
                 )}
-
             </main>
 
             {/* Modal */}
@@ -122,9 +158,20 @@ const CourseSessions = () => {
                             <input type="text" placeholder="Título de la sesión" required className="w-full border p-2 rounded" value={formData.title} onChange={e => setFormData({...formData, title: e.target.value})} />
                             <textarea placeholder="Descripción (Temas a tratar)" className="w-full border p-2 rounded" value={formData.description} onChange={e => setFormData({...formData, description: e.target.value})} />
 
-                            <div>
-                                <label className="block text-xs font-bold text-gray-500 mb-1">Fecha y Hora</label>
-                                <input type="datetime-local" required className="w-full border p-2 rounded" value={formData.startTime} onChange={e => setFormData({...formData, startTime: e.target.value})} />
+                            <div className="grid grid-cols-2 gap-2">
+                                <div>
+                                    <label className="block text-xs font-bold text-gray-500 mb-1">Fecha</label>
+                                    <input type="date" required className="w-full border p-2 rounded" value={formData.date} onChange={e => setFormData({...formData, date: e.target.value})} />
+                                </div>
+                                <div>
+                                    <label className="block text-xs font-bold text-gray-500 mb-1">Hora Inicio</label>
+                                    <select className="w-full border p-2 rounded" value={formData.time} onChange={e => setFormData({...formData, time: e.target.value})}>
+                                        <option value="">-- Hora --</option>
+                                        {generateHalfHourOptions().map(t => (
+                                            <option key={t} value={t}>{t}</option>
+                                        ))}
+                                    </select>
+                                </div>
                             </div>
 
                             <input type="url" placeholder="Link de Zoom / Meet" className="w-full border p-2 rounded" value={formData.meetingLink} onChange={e => setFormData({...formData, meetingLink: e.target.value})} />

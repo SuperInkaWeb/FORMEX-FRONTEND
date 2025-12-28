@@ -31,6 +31,8 @@ const Login = () => {
                 navigate('/admin');
             } else if (userData.roles.includes('ROLE_INSTRUCTOR')) {
                 navigate('/instructor');
+            } else if (userData.roles.includes('ROLE_STUDENT')) {
+                navigate('/student');
             } else {
                 navigate('/');
             }

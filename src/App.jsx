@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
+import AttendancePage from './pages/instructor/AttendancePage';
 
 // Páginas Públicas
 import Home from './pages/main/Home';
@@ -25,9 +26,14 @@ import UsersManager from './pages/admin/UsersManager';
 import CoursesManager from './pages/admin/CourseManager';
 import CourseSessions from './pages/admin/CourseSessions.jsx';
 
-//Paginas docente
+// Páginas docente
 import InstructorDashboard from "./pages/instructor/InstructorDashboard.jsx";
 import InstructorCourseSessions from "./pages/instructor/CourseSessions.jsx";
+import CourseMaterials from "./pages/instructor/CourseMaterials.jsx"; // <-- NUEVA PÁGINA
+
+// Páginas estudiante
+import StudentDashboard from './pages/student/StudentDashboard';
+import StudentCourseSessions from './pages/student/StudentCourseSessions';
 
 const ScrollToTop = () => {
     const { pathname } = useLocation();
@@ -43,7 +49,7 @@ function App() {
             <Router>
                 <ScrollToTop />
                 <Routes>
-                    {/* RUTA PÚBLICA */}
+                    {/* Rutas Públicas */}
                     <Route path="/" element={<Home />} />
                     <Route path="/about" element={<About />} />
                     <Route path="/blog" element={<Blog />} />
@@ -58,7 +64,7 @@ function App() {
                     <Route path="/forgot-password" element={<ForgotPassword />} />
                     <Route path="/reset-password" element={<ResetPassword />} />
 
-                    {/* RUTA PROTEGIDA DE ADMIN */}
+                    {/* Rutas ADMIN */}
                     <Route path="/admin" element={
                         <ProtectedRoute roles={['ROLE_ADMIN']}>
                             <AdminLayout />
@@ -67,20 +73,46 @@ function App() {
                         <Route index element={<DashboardHome />} />
                         <Route path="users" element={<UsersManager />} />
                         <Route path="courses" element={<CoursesManager />} />
-                        <Route path="courses/:id/sessions" element={<CourseSessions />} />
+                        <Route path="courses/:courseId/sessions" element={<CourseSessions />} />
                     </Route>
-                    {/* RUTA PROTEGIDA DE INSTRUCTOR */}
+
+                    {/* Rutas INSTRUCTOR */}
                     <Route path="/instructor" element={
                         <ProtectedRoute roles={['ROLE_INSTRUCTOR', 'ROLE_ADMIN']}>
                             <InstructorDashboard />
                         </ProtectedRoute>
                     } />
-                    {/* Usamos el componente importado con alias para evitar choques de nombre */}
+                    {/* Rutas STUDENT */}
+                    <Route path="/student" element={
+                        <ProtectedRoute roles={['ROLE_STUDENT']}>
+                            <StudentDashboard />
+                        </ProtectedRoute>
+                    } />
                     <Route path="/instructor/course/:courseId/sessions" element={
                         <ProtectedRoute roles={['ROLE_INSTRUCTOR', 'ROLE_ADMIN']}>
                             <InstructorCourseSessions />
                         </ProtectedRoute>
                     } />
+
+                    {/* Ruta de materiales */}
+                    <Route path="/instructor/course/:courseId/session/:sessionId/materials" element={
+                        <ProtectedRoute roles={['ROLE_INSTRUCTOR', 'ROLE_ADMIN']}>
+                            <CourseMaterials />
+                        </ProtectedRoute>
+                    } />
+
+                    {/* Ruta para ver asistencia */}
+                    <Route path="/instructor/course/:courseId/attendance/:sessionId"element={
+                        <ProtectedRoute roles={['ROLE_INSTRUCTOR', 'ROLE_ADMIN']}>
+                            <AttendancePage />
+                        </ProtectedRoute>
+                    } />
+                    <Route
+                     path="/student/course/:courseId/sessions"
+                   element={<StudentCourseSessions />}
+                    />
+
+                    {/* Ruta por defecto */}
                     <Route path="*" element={<Home />} />
                 </Routes>
             </Router>

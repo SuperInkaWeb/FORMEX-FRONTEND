@@ -8,22 +8,44 @@ const InstructorDashboard = () => {
     const { user, logout } = useAuth();
     const [courses, setCourses] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [showStudentsModal, setShowStudentsModal] = useState(false);
+    const [students, setStudents] = useState([]);
+    const [studentsLoading, setStudentsLoading] = useState(false);
+    const [selectedCourse, setSelectedCourse] = useState(null);
 
     useEffect(() => {
         const fetchMyCourses = async () => {
             try {
-                // En producción: usar endpoint específico /instructor/courses
-                const allCourses = await CourseService.getAllCourses();
-                // Filtro simulado para demostración (ajustar según backend real)
-                setCourses(allCourses);
+                // Usar endpoint protegido del backend para traer solo los cursos del docente
+                const myCourses = await CourseService.getInstructorCourses();
+                setCourses(myCourses);
             } catch (error) {
-                console.error("Error cargando cursos", error);
+                console.error("Error cargando cursos del docente", error);
             } finally {
                 setLoading(false);
             }
         };
         fetchMyCourses();
     }, [user]);
+
+    const handleOpenStudents = async (course) => {
+        setSelectedCourse(course);
+        setShowStudentsModal(true);
+        setStudentsLoading(true);
+        try {
+            const resp = await CourseService.getCourseStudents(course.id);
+            // normalize possible response shapes: array, { data: [...] }, { content: [...] }, { students: [...] }
+            const list = Array.isArray(resp)
+                ? resp
+                : (resp?.data || resp?.content || resp?.students || resp || []);
+            setStudents(list || []);
+        } catch (err) {
+            console.error('Error fetching students', err);
+            setStudents([]);
+        } finally {
+            setStudentsLoading(false);
+        }
+    };
 
     return (
         <div className="min-h-screen bg-gray-50 font-sans flex flex-col">
@@ -148,15 +170,17 @@ const InstructorDashboard = () => {
                                                 <span className="text-red-500 text-xs font-bold flex items-center gap-1">● Inactivo</span>
                                             }
                                         </td>
-                                        <td className="p-6 text-right">
-                                            {/* BOTÓN PRINCIPAL: Gestionar Sesiones (Agregar clases) */}
-                                            <Link
-                                                to={`/instructor/course/${course.id}/sessions`}
-                                                className="inline-flex items-center gap-2 px-4 py-2 bg-purple-50 text-purple-700 rounded-lg hover:bg-purple-100 transition-colors font-bold text-sm"
-                                            >
-                                                <Plus size={16}/> Agregar Sesión
-                                            </Link>
-                                        </td>
+                                                <td className="p-6 text-right">
+                                                    <div className="inline-flex items-center gap-3">
+                                                        <button onClick={() => handleOpenStudents(course)} className="inline-flex items-center gap-2 px-4 py-2 bg-white border border-gray-100 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-bold text-sm">
+                                                            <Users size={16}/> Alumnos
+                                                        </button>
+                                                        {/* BOTÓN PRINCIPAL: Mostrar alumnos y opción para gestionar sesiones */}
+                                                        <Link to={`/instructor/course/${course.id}/sessions`} className="inline-flex items-center gap-2 px-4 py-2 bg-purple-50 text-purple-700 rounded-lg hover:bg-purple-100 transition-colors font-bold text-sm">
+                                                            <Plus size={16}/> Agregar Sesión
+                                                        </Link>
+                                                    </div>
+                                                </td>
                                     </tr>
                                 ))}
                                 </tbody>
@@ -172,6 +196,35 @@ const InstructorDashboard = () => {
 
                 </div>
             </main>
+
+            {/* Students Modal */}
+            {showStudentsModal && (
+                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+                    <div className="bg-white rounded-2xl p-6 max-w-lg w-full shadow-2xl">
+                        <div className="flex items-center justify-between mb-4">
+                            <h3 className="text-lg font-bold">Alumnos inscritos - {selectedCourse?.title}</h3>
+                            <button onClick={() => setShowStudentsModal(false)} className="text-gray-400 hover:text-gray-700">Cerrar</button>
+                        </div>
+                        {studentsLoading ? (
+                            <div className="text-center py-8">Cargando alumnos...</div>
+                        ) : students && students.length > 0 ? (
+                            <ul className="space-y-3 max-h-72 overflow-auto">
+                                {students.map(s => (
+                                    <li key={s.id} className="bg-gray-50 p-3 rounded-lg border border-gray-100 flex items-center justify-between">
+                                        <div>
+                                            <p className="font-bold text-sm text-gray-800">{s.fullName || s.fullname}</p>
+                                            <p className="text-xs text-gray-500">{s.email}</p>
+                                        </div>
+                                        <div className="text-xs text-gray-500">{s.phone || ''}</div>
+                                    </li>
+                                ))}
+                            </ul>
+                        ) : (
+                            <div className="text-center py-8 text-gray-500">No hay alumnos inscritos en este curso.</div>
+                        )}
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
