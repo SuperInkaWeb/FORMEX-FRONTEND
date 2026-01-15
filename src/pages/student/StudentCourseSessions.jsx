@@ -31,15 +31,35 @@ const StudentCourseSessions = () => {
   return (
     <div className="min-h-screen bg-gray-50">
 
-      {/* HEADER */}
       <header className="bg-white border-b p-4">
-        <div className="max-w-5xl mx-auto flex items-center gap-4">
-          <Link to="/student" className="p-2 hover:bg-gray-100 rounded-full">
-            <ArrowLeft />
-          </Link>
-          <div>
-            <h1 className="text-xl font-bold">{course?.title || 'Cargando...'}</h1>
-            <p className="text-xs text-gray-500">Sesiones del curso</p>
+        <div className="max-w-5xl mx-auto flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <Link to="/student" className="p-2 hover:bg-gray-100 rounded-full">
+              <ArrowLeft />
+            </Link>
+            <div>
+              <h1 className="text-xl font-bold">
+                {course?.title || 'Cargando...'}
+              </h1>
+              <p className="text-xs text-gray-500">Sesiones del curso</p>
+            </div>
+          </div>
+
+          {/* BOTONES */}
+          <div className="flex gap-2">
+            <Link
+              to={`/student/course/${courseId}/attendance`}
+              className="bg-orange-500 text-white px-4 py-2 rounded-lg font-bold hover:bg-orange-600 transition"
+            >
+              Mis asistencias
+            </Link>
+
+            <Link
+              to={`/student/course/${courseId}/resources`}
+              className="bg-blue-500 text-white px-4 py-2 rounded-lg font-bold hover:bg-blue-600 transition"
+            >
+              Ver recursos
+            </Link>
           </div>
         </div>
       </header>

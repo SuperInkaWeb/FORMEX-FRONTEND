@@ -4,11 +4,44 @@ import { CheckCircle, Clock, Globe, User, Share2, PlayCircle } from 'lucide-reac
 import Navbar from '../../components/Navbar.jsx';
 import Footer from '../../components/Footer.jsx';
 import CourseService from '../../services/courseService.js';
-
+import { loadStripe } from '@stripe/stripe-js';
+ const stripePromise = loadStripe("pk_test_51SmRt6QaSDFKm65yY2w7YldJLxAcYmqL2uL8Q3POUQNDAWDmxeA34X7nn2z9n5NO5gEutfd09qxaznpHsI8oZBIP00rpUcV4f6"
+);
 const CourseDetail = () => {
     const { id } = useParams();
     const [course, setCourse] = useState(null);
     const [loading, setLoading] = useState(true);
+
+const handlePay = async () => {
+  try {
+    const response = await fetch(
+      'http://localhost:8080/api/payments/stripe/create-session',
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+        },
+        body: JSON.stringify({
+          courseId: Number(id) // 🔥 FIX CLAVE
+        }),
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error('Error al crear sesión de pago');
+    }
+
+    const data = await response.json();
+
+    window.location.href = data.url;
+
+  } catch (error) {
+    console.error(error);
+    alert(error.message);
+  }
+};
+
 
     useEffect(() => {
         const fetchCourse = async () => {
@@ -84,9 +117,13 @@ const CourseDetail = () => {
                                     </div>
                                 </div>
                                 <div className="text-3xl font-extrabold text-gray-900 mb-6">${course.price}</div>
-                                <button className="w-full py-4 bg-formex-orange text-white font-bold rounded-xl hover:bg-orange-600 transition-all shadow-lg mb-4">
-                                    Comprar Ahora
+                                <button
+                             onClick={handlePay}
+                             className="w-full py-4 bg-formex-orange text-white font-bold rounded-xl hover:bg-orange-600 transition-all shadow-lg mb-4"
+                                >
+                             Comprar Ahora
                                 </button>
+
                                 <p className="text-center text-xs text-gray-500 mb-6">Garantía de devolución de 15 días</p>
                                 <div className="space-y-4 pt-6 border-t border-gray-100">
                                     <h4 className="font-bold text-gray-900">Este curso incluye:</h4>

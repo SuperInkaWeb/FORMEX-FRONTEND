@@ -21,7 +21,16 @@ const AttendanceService = {
       { status }
     );
     return data;
-  }
+  },
+
+  getAttendanceSummaryByCourse: async (courseId) => {
+  const { data } = await api.get(
+    `/api/student/courses/${courseId}/attendance-summary`
+  );
+  return data;
+}
+  
 };
+
 
 export default AttendanceService;

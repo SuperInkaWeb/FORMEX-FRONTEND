@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Users, BookOpen, DollarSign, TrendingUp } from 'lucide-react';
+import api from '../../services/api'; // 👈 tu axios configurado
 
 const StatCard = ({ title, value, icon, color, subtext }) => (
     <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex items-center gap-4 hover:shadow-md transition-shadow">
@@ -9,38 +10,67 @@ const StatCard = ({ title, value, icon, color, subtext }) => (
         <div>
             <p className="text-gray-500 text-sm font-bold uppercase tracking-wider">{title}</p>
             <h3 className="text-3xl font-extrabold text-gray-900 mt-1">{value}</h3>
-            {subtext && <p className="text-xs text-green-600 font-bold mt-1 flex items-center gap-1"><TrendingUp size={12}/> {subtext}</p>}
+            {subtext && (
+                <p className="text-xs text-green-600 font-bold mt-1 flex items-center gap-1">
+                    <TrendingUp size={12}/> {subtext}
+                </p>
+            )}
         </div>
     </div>
 );
 
 const DashboardHome = () => {
+
+    const [stats, setStats] = useState(null);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchStats = async () => {
+            try {
+                const res = await api.get('/api/admin/stats');
+                setStats(res.data);
+            } catch (error) {
+                console.error('Error cargando estadísticas:', error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchStats();
+    }, []);
+
+    if (loading) return <p>Cargando estadísticas...</p>;
+    if (!stats) return <p>Error al cargar estadísticas</p>;
+
     return (
         <div>
             <div className="grid md:grid-cols-3 gap-6 mb-8">
-                {/* Datos simulados (Idealmente vendrían de un endpoint /api/admin/stats) */}
                 <StatCard
                     title="Estudiantes"
-                    value="1,240"
+                    value={stats.students}
                     icon={<Users size={28}/>}
                     color="bg-blue-500 shadow-blue-200"
-                    subtext="+12% este mes"
+                    subtext={stats.studentsGrowth}
                 />
+
                 <StatCard
                     title="Cursos Activos"
-                    value="24"
+                    value={stats.courses}
                     icon={<BookOpen size={28}/>}
                     color="bg-formex-orange shadow-orange-200"
-                    subtext="4 nuevos esta semana"
+                    subtext={stats.coursesGrowth}
                 />
+
                 <StatCard
                     title="Ingresos (Mes)"
-                    value="$8,450"
+                    value={`$${stats.income}`}
                     icon={<DollarSign size={28}/>}
                     color="bg-green-500 shadow-green-200"
-                    subtext="+5% vs mes anterior"
+                    subtext={stats.incomeGrowth}
                 />
             </div>
+
+            {/* === EL RESTO SE MANTIENE TAL CUAL === */}
 
             <div className="grid lg:grid-cols-2 gap-8">
                 <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
@@ -61,7 +91,10 @@ const DashboardHome = () => {
                 <div className="bg-formex-dark rounded-2xl shadow-lg p-6 text-white relative overflow-hidden">
                     <div className="absolute top-0 right-0 w-64 h-64 bg-formex-lime rounded-full mix-blend-overlay filter blur-[60px] opacity-20"></div>
                     <h2 className="text-lg font-bold mb-2 relative z-10">Estado del Sistema</h2>
-                    <p className="text-gray-400 text-sm mb-6 relative z-10">Todos los servicios operan con normalidad.</p>
+                    <p className="text-gray-400 text-sm mb-6 relative z-10">
+                        Todos los servicios operan con normalidad.
+                    </p>
+
                     <div className="space-y-3 relative z-10">
                         <div className="flex justify-between items-center text-sm">
                             <span>Base de Datos</span>

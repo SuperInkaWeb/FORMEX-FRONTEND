@@ -1,11 +1,21 @@
 import React from 'react';
-import { Link, Outlet, useNavigate } from 'react-router-dom';
-import { useAuth } from '../../context/AuthContext';
-import { LayoutDashboard, Users, BookOpen, LogOut, Home, User } from 'lucide-react';
+import { Link, Outlet, Navigate } from 'react-router-dom';
+import { LayoutDashboard, Users, BookOpen, LogOut, Home, User } from "lucide-react";
+import { useAuth0 } from "@auth0/auth0-react";
+import { useUser } from "../../context/UserContext";
 
 const AdminLayout = () => {
-    const { logout, user } = useAuth();
-    const navigate = useNavigate();
+  const { userInfo, loadingUser } = useUser();
+  const { logout } = useAuth0();
+
+  if (loadingUser) return <p>Cargando...</p>;
+  if (!userInfo) return <Navigate to="/" replace />;
+
+  const roleNames = userInfo.roles?.map(r => r.name) || [];
+
+  if (!roleNames.includes("ROLE_ADMIN")) {
+    return <Navigate to="/" replace />;
+  }
 
     return (
         <div className="flex h-screen bg-gray-100 font-sans">
@@ -32,9 +42,19 @@ const AdminLayout = () => {
                     <Link to="/" className="flex items-center gap-3 px-4 py-2 text-sm text-gray-500 hover:text-gray-900">
                         <Home size={16} /> Ver Sitio Web
                     </Link>
-                    <button onClick={logout} className="flex items-center gap-3 px-4 py-2 text-sm text-red-500 hover:bg-red-50 rounded-lg w-full transition-colors font-medium">
-                        <LogOut size={16} /> Cerrar Sesión
-                    </button>
+                    <button
+         onClick={() =>
+        logout({
+         logoutParams: {
+         returnTo: window.location.origin,
+      },
+    })
+  }
+  className="flex items-center gap-3 px-4 py-2 text-sm text-red-500 hover:bg-red-50 rounded-lg w-full transition-colors font-medium"
+>
+  <LogOut size={16} /> Cerrar Sesión
+</button>
+
                 </div>
             </aside>
 
@@ -43,13 +63,28 @@ const AdminLayout = () => {
                 {/* Header Móvil */}
                 <header className="bg-white shadow-sm p-4 md:hidden flex justify-between items-center sticky top-0 z-20">
                     <span className="font-bold text-gray-800">Formex Admin</span>
-                    <button onClick={logout} className="text-red-500"><LogOut size={20}/></button>
+                    <button
+              onClick={() =>
+                logout({
+          logoutParams: {
+          returnTo: window.location.origin,
+         },
+        })
+      }
+  className="text-red-500"
+>
+  <LogOut size={20} />
+</button>
+
                 </header>
 
                 <div className="p-8 max-w-7xl mx-auto">
                     <header className="flex justify-between items-center mb-8">
                         <div>
-                            <h1 className="text-2xl font-bold text-gray-800">Bienvenido, {user?.fullName || 'Admin'}</h1>
+                            <h1 className="text-2xl font-bold text-gray-800">
+                       Bienvenido, {userInfo.fullName || 'Admin'}
+                           </h1>
+
                             <p className="text-gray-500 text-sm">Gestiona tu plataforma educativa desde aquí.</p>
                         </div>
                         <div className="flex items-center gap-3 bg-white px-4 py-2 rounded-full shadow-sm border border-gray-100">

@@ -1,25 +1,33 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import CourseService from '../../services/courseService';
 import AttendanceService from '../../services/attendanceService';
+
 const AttendancePage = () => {
   const { courseId, sessionId } = useParams();
+
   const [students, setStudents] = useState([]);
   const [attendance, setAttendance] = useState({});
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+   const [sessionNumber, setSessionNumber] = useState(sessionId);
+
  useEffect(() => {
   const loadAttendance = async () => {
     try {
       const data = await AttendanceService.getAttendance(sessionId);
-         setStudents(data.students);
+
+      setStudents(data.students || []);
 
       const initialAttendance = {};
-      data.students.forEach(s => {
-        initialAttendance[s.studentId] = s.status || 'PRESENT';
+      data.students.forEach((s) => {
+        initialAttendance[s.userId] = s.status || 'ABSENT';
       });
-
       setAttendance(initialAttendance);
+
+      // 👈 actualizamos con el número real de sesión si existe
+      if (data.session?.number) {
+        setSessionNumber(data.session.number);
+      }
     } catch (error) {
       console.error('Error cargando asistencia', error);
     } finally {
@@ -30,10 +38,10 @@ const AttendancePage = () => {
   loadAttendance();
 }, [sessionId]);
 
-  const handleChange = (studentId, value) => {
+  const handleChange = (userId, value) => {
     setAttendance((prev) => ({
       ...prev,
-      [studentId]: value,
+      [userId]: value,
     }));
   };
 
@@ -43,8 +51,8 @@ const AttendancePage = () => {
 
       const payload = {
         attendance: Object.entries(attendance).map(
-          ([studentId, status]) => ({
-            studentId: Number(studentId),
+          ([userId, status]) => ({
+            userId: Number(userId),
             status, // PRESENT | ABSENT
           })
         ),
@@ -74,16 +82,13 @@ const AttendancePage = () => {
       <div className="max-w-4xl mx-auto bg-white rounded-2xl shadow-lg p-8">
 
         <div className="flex items-center justify-between mb-6">
-         <Link
-           to={`/instructor/course/${courseId}/sessions`}
-              className="text-sm text-gray-500 hover:text-orange-500 font-medium"
-           >
-          ← Volver
-           </Link>
- 
-          <span className="text-sm bg-orange-100 text-orange-600 px-3 py-1 rounded-full font-semibold">
-            Sesión {sessionId}
-          </span>
+          <Link
+            to={`/instructor/course/${courseId}/sessions`}
+            className="text-sm text-gray-500 hover:text-orange-500 font-medium"
+          >
+            ← Volver
+          </Link>
+
         </div>
 
         <h2 className="text-2xl font-bold text-gray-800 mb-6">
@@ -110,22 +115,24 @@ const AttendancePage = () => {
                 </thead>
                 <tbody>
                   {students.map((student) => (
-                    <tr key={student.studentId} className="border-t">
+                    <tr key={student.userId} className="border-t">
                       <td className="px-6 py-4 text-gray-800">
-                             {student.fullName} 
+                        {student.fullName}
                       </td>
                       <td className="px-6 py-4 text-center">
                         <select
-                          value={attendance[student.studentId]}
-                         onChange={(e) => handleChange(student.studentId, e.target.value)}
-                         className={`px-4 py-2 rounded-lg border font-semibold text-sm ${
-                          attendance[student.studentId] === 'PRESENT'
-                          ? 'bg-green-50 border-green-300 text-green-700'
+                          value={attendance[student.userId]}
+                          onChange={(e) =>
+                            handleChange(student.userId, e.target.value)
+                          }
+                          className={`px-4 py-2 rounded-lg border font-semibold text-sm ${
+                            attendance[student.userId] === 'PRESENT'
+                              ? 'bg-green-50 border-green-300 text-green-700'
                               : 'bg-red-50 border-red-300 text-red-600'
-                           }`}
-                          >
-                           <option value="PRESENT">✅ PRESENTE</option>
-                            <option value="ABSENT">❌ AUSENTE</option>
+                          }`}
+                        >
+                          <option value="PRESENT">✅ PRESENTE</option>
+                          <option value="ABSENT">❌ AUSENTE</option>
                         </select>
                       </td>
                     </tr>

@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'; // Para navegar a Sesiones
 import CourseService from '../../services/courseService';
 import api from '../../services/api';
 import { Plus, Trash2, Edit2, BookOpen, UploadCloud, Loader, Image, Calendar, Users } from 'lucide-react';
-import EnrolledStudentsModal from './EnrolledStudentsModal';
+import EnrolledStudentsModal from './CourseStudentsPage';
 const user = JSON.parse(localStorage.getItem("user"));
 const isAdmin =
   user?.roles?.includes("ADMIN") ||
@@ -216,23 +216,24 @@ const assignInstructor = async (instructorId) => {
                                     <BookOpen size={18}/>
                                 </button>
 
-                                <button onClick={async () => {
-                                    
-                                    setSelectedCourse(course);
-                                    setShowStudentsModalAdmin(true);
-                                    setStudentsAdminLoading(true);
-                                    try {
-                                        const data = await CourseService.getCourseStudents(course.id);
-                                        setStudentsAdmin(Array.isArray(data) ? data : (data?.data || data?.content || []));
-                                    } catch (err) {
-                                        console.error('Error cargando alumnos (admin)', err);
-                                        setStudentsAdmin([]);
-                                    } finally {
-                                        setStudentsAdminLoading(false);
-                                    }
-                                }} className="p-2 text-gray-700 hover:bg-gray-50 rounded-lg transition-colors" title="Ver Alumnos">
-                                    <Users size={18}/>
-                                </button>
+                              {/* VER ALUMNOS INSCRITOS */}
+<Link
+  to={`/admin/courses/${course.id}/students`}
+  className="p-2 text-gray-700 hover:bg-gray-50 rounded-lg transition-colors"
+  title="Ver alumnos inscritos"
+>
+  <Users size={18} />
+</Link>
+
+{/* INSCRIBIR ALUMNOS */}
+<Link
+  to={`/admin/courses/${course.id}/enroll`}
+  className="p-2 text-formex-orange hover:bg-orange-50 rounded-lg transition-colors"
+  title="Inscribir alumnos"
+>
+  <Plus size={18} />
+</Link>
+
 
                                 <button onClick={() => handleOpenEdit(course)} className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors" title="Editar"><Edit2 size={18}/></button>
                                 <button onClick={() => handleDelete(course.id)} className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors" title="Eliminar"><Trash2 size={18}/></button>

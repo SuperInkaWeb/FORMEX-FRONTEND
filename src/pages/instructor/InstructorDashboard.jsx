@@ -2,31 +2,66 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { BookOpen, Users, DollarSign, Plus, Calendar, User, LogOut, Loader } from 'lucide-react';
 import CourseService from '../../services/courseService'; // Reusamos por ahora
-import { useAuth } from '../../context/AuthContext';
+import { useAuth0 } from "@auth0/auth0-react";
+import SessionService from '../../services/sessionService';
 
 const InstructorDashboard = () => {
-    const { user, logout } = useAuth();
+    const { user, logout } = useAuth0();
     const [courses, setCourses] = useState([]);
     const [loading, setLoading] = useState(true);
     const [showStudentsModal, setShowStudentsModal] = useState(false);
     const [students, setStudents] = useState([]);
     const [studentsLoading, setStudentsLoading] = useState(false);
     const [selectedCourse, setSelectedCourse] = useState(null);
+   const [nextSession, setNextSession] = useState(null);
+   const [totalStudents, setTotalStudents] = useState(0);
 
     useEffect(() => {
-        const fetchMyCourses = async () => {
-            try {
-                // Usar endpoint protegido del backend para traer solo los cursos del docente
-                const myCourses = await CourseService.getInstructorCourses();
-                setCourses(myCourses);
-            } catch (error) {
-                console.error("Error cargando cursos del docente", error);
-            } finally {
-                setLoading(false);
-            }
-        };
-        fetchMyCourses();
-    }, [user]);
+  const fetchMyCoursesAndNextSession = async () => {
+    try {
+      const myCourses = await CourseService.getInstructorCourses();
+      setCourses(myCourses || []);
+
+      let allSessions = [];
+      const studentsSet = new Set(); // ✅ AQUÍ
+
+      for (const course of myCourses || []) {
+
+        // 🔹 sesiones
+        const sessions = await SessionService.getSessionsByCourse(course.id);
+        if (sessions?.length) {
+          allSessions.push(
+            ...sessions.map(s => ({
+              ...s,
+              courseTitle: course.title
+            }))
+          );
+        }
+
+        // 🔹 alumnos (REALES)
+        const students = await CourseService.getCourseStudents(course.id);
+        (students || []).forEach(s => studentsSet.add(s.id));
+      }
+
+      setTotalStudents(studentsSet.size);
+
+      const now = new Date();
+      const upcoming = allSessions
+        .filter(s => new Date(s.startTime) >= now)
+        .sort((a, b) => new Date(a.startTime) - new Date(b.startTime));
+
+      setNextSession(upcoming.length > 0 ? upcoming[0] : null);
+
+    } catch (error) {
+      console.error("Error cargando cursos/sesiones del instructor", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  fetchMyCoursesAndNextSession();
+}, [user]);
+
 
     const handleOpenStudents = async (course) => {
         setSelectedCourse(course);
@@ -66,7 +101,9 @@ const InstructorDashboard = () => {
                                 <User size={16}/>
                             </div>
                             <div className="hidden md:block text-sm">
-                                <p className="font-bold text-gray-800 leading-none">{user?.fullName}</p>
+                                   <p className="font-bold text-gray-800 leading-none">
+                             {user?.name || user?.given_name || user?.email}
+                                 </p>
                                 <p className="text-xs text-gray-500">Docente</p>
                             </div>
                         </div>
@@ -103,7 +140,7 @@ const InstructorDashboard = () => {
                                 </div>
                                 <div>
                                     <p className="text-sm text-gray-500 font-medium">Total Alumnos</p>
-                                    <h3 className="text-2xl font-bold text-gray-900">--</h3>
+                                    <h3 className="text-2xl font-bold text-gray-900">{totalStudents}</h3>
                                 </div>
                             </div>
                             <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex items-center gap-4">
@@ -112,7 +149,20 @@ const InstructorDashboard = () => {
                                 </div>
                                 <div>
                                     <p className="text-sm text-gray-500 font-medium">Próxima Clase</p>
-                                    <h3 className="text-lg font-bold text-gray-900">Hoy, 18:00</h3>
+                                    <h3 className="text-lg font-bold text-gray-900">
+                         {nextSession ? (
+                           <>
+                        {new Date(nextSession.startTime).toLocaleDateString()}{" "}
+                         {new Date(nextSession.startTime).toLocaleTimeString([], {
+                                hour: '2-digit',
+                                minute: '2-digit'
+                              })}
+                               </>
+                             ) : (
+                          'Sin clases próximas'
+                                    )}
+                                 </h3>
+
                                 </div>
                             </div>
                         </div>
@@ -171,15 +221,30 @@ const InstructorDashboard = () => {
                                             }
                                         </td>
                                                 <td className="p-6 text-right">
-                                                    <div className="inline-flex items-center gap-3">
-                                                        <button onClick={() => handleOpenStudents(course)} className="inline-flex items-center gap-2 px-4 py-2 bg-white border border-gray-100 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-bold text-sm">
-                                                            <Users size={16}/> Alumnos
-                                                        </button>
-                                                        {/* BOTÓN PRINCIPAL: Mostrar alumnos y opción para gestionar sesiones */}
-                                                        <Link to={`/instructor/course/${course.id}/sessions`} className="inline-flex items-center gap-2 px-4 py-2 bg-purple-50 text-purple-700 rounded-lg hover:bg-purple-100 transition-colors font-bold text-sm">
-                                                            <Plus size={16}/> Agregar Sesión
-                                                        </Link>
-                                                    </div>
+                                                   <div className="inline-flex items-center gap-3">
+    {/* 🔥 NUEVO BOTÓN RECURSOS */}
+    <Link
+        to={`/instructor/course/${course.id}/resources`}
+        className="inline-flex items-center gap-2 px-4 py-2 bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100 transition-colors font-bold text-sm"
+    >
+        <BookOpen size={16}/> Recursos
+    </Link>
+
+    <button
+        onClick={() => handleOpenStudents(course)}
+        className="inline-flex items-center gap-2 px-4 py-2 bg-white border border-gray-100 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-bold text-sm"
+    >
+        <Users size={16}/> Alumnos
+    </button>
+
+    <Link
+        to={`/instructor/course/${course.id}/sessions`}
+        className="inline-flex items-center gap-2 px-4 py-2 bg-purple-50 text-purple-700 rounded-lg hover:bg-purple-100 transition-colors font-bold text-sm"
+    >
+        <Plus size={16}/> Agregar Sesión
+    </Link>
+</div>
+
                                                 </td>
                                     </tr>
                                 ))}

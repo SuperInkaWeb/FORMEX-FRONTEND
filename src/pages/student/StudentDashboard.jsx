@@ -1,27 +1,53 @@
 import React, { useEffect, useState } from 'react';
 import { BookOpen, LogOut, User, Loader, Calendar } from 'lucide-react';
-import { useAuth } from '../../context/AuthContext';
+import { useAuth0 } from "@auth0/auth0-react";
 import StudentCourseService from '../../services/studentCourseService';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import SessionService from '../../services/sessionService';
+
 const StudentDashboard = () => {
-  const { user, logout } = useAuth();
+const { user, logout } = useAuth0();
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
+const navigate = useNavigate(); 
+ useEffect(() => {
+  const fetchCoursesAndNextSession = async () => {
+    try {
+      const { data } = await StudentCourseService.getMyCourses();
+      const myCourses = data || [];
+      setCourses(myCourses);
 
-  useEffect(() => {
-    const fetchCourses = async () => {
-      try {
-        const { data } = await StudentCourseService.getMyCourses();
-        setCourses(data || []);
-      } catch (error) {
-        console.error('Error cargando cursos del estudiante', error);
-      } finally {
-        setLoading(false);
+      // 🔥 Obtener TODAS las sesiones de los cursos del alumno
+      let allSessions = [];
+
+      for (const course of myCourses) {
+        const sessions = await SessionService.getSessionsByCourse(course.id);
+        if (sessions?.length) {
+          allSessions = [...allSessions, ...sessions];
+        }
       }
-    };
 
-    fetchCourses();
-  }, []);
+      // 🕒 Fecha actual
+      const now = new Date();
+
+      // 📅 Filtrar sesiones futuras y ordenar por fecha
+      const upcoming = allSessions
+        .filter(s => new Date(s.startTime) >= now)
+        .sort((a, b) => new Date(a.startTime) - new Date(b.startTime));
+
+      // 🎯 Próxima clase
+      setNextSession(upcoming.length > 0 ? upcoming[0] : null);
+
+    } catch (error) {
+      console.error('Error cargando cursos/sesiones', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  fetchCoursesAndNextSession();
+}, []);
+  const [nextSession, setNextSession] = useState(null);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -34,14 +60,22 @@ const StudentDashboard = () => {
           </div>
           <span className="font-bold text-lg">Student Panel</span>
         </div>
-
-        <div className="flex items-center gap-3">
-          <User size={18} />
-          <span className="text-sm font-bold">{user?.fullName}</span>
-          <button onClick={logout} title="Cerrar sesión">
-            <LogOut size={18} />
-          </button>
-        </div>
+<div className="flex items-center gap-3">
+  <User size={18} />
+  <div className="leading-tight text-right">
+    <p className="text-sm font-bold text-gray-800">
+      {user?.name || user?.given_name || user?.email}
+    </p>
+    <p className="text-xs text-gray-500">Estudiante</p>
+  </div>
+  <button
+    onClick={() => navigate('/')}
+    title="Ir al inicio"
+    className="text-gray-500 hover:text-formex-orange transition"
+  >
+    <LogOut size={18} />
+  </button>
+</div>
       </header>
 
       {/* CONTENIDO */}
@@ -78,8 +112,18 @@ const StudentDashboard = () => {
           Próxima Clase
         </p>
         <h3 className="text-lg font-bold text-gray-900">
-          Hoy, 18:00
-        </h3>
+  {nextSession ? (
+    <>
+      {new Date(nextSession.startTime).toLocaleDateString()}{" "}
+      {new Date(nextSession.startTime).toLocaleTimeString([], {
+        hour: '2-digit',
+        minute: '2-digit'
+      })}
+    </>
+  ) : (
+    'Sin clases próximas'
+  )}
+</h3>
       </div>
     </div>
 

@@ -10,23 +10,11 @@ const UsersManager = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [editingId, setEditingId] = useState(null);
 
-    const [courses, setCourses] = useState([]);
 
-    const initialForm = { fullname: '', email: '', password: '', roles: 'student', phone: '', enabled: true, courseId: '' };
+    const initialForm = { fullname: '', email: '', password: '', roles: 'student', phone: '', enabled: true };
     const [formData, setFormData] = useState(initialForm);
 
     useEffect(() => { loadUsers(); }, []);
-
-    useEffect(() => { loadCourses(); }, []);
-
-    const loadCourses = async () => {
-        try {
-            const data = await CourseService.getAllCourses();
-            setCourses(data || []);
-        } catch (error) {
-            console.error('Error loading courses', error);
-        }
-    };
 
     const loadUsers = async () => {
         try {
@@ -47,7 +35,6 @@ const UsersManager = () => {
             phone: user.phone || '',
             enabled: user.enabled,
             // try to pick first assigned course if exists
-            courseId: (user.courses && user.courses[0] && user.courses[0].id) ? user.courses[0].id : ''
         });
         setShowModal(true);
     };
@@ -56,10 +43,6 @@ const UsersManager = () => {
     e.preventDefault();
     try {
         const payload = { ...formData, roles: [formData.roles] };
-
-        if (formData.roles === 'student' && formData.courseId) {
-            payload.courseId = formData.courseId;
-        }
 
         if (editingId) {
             await AdminService.updateUser(editingId, payload);
@@ -159,14 +142,6 @@ const UsersManager = () => {
                                 <option value="instructor">Instructor</option>
                                 <option value="admin">Administrador</option>
                             </select>
-                            {formData.roles === 'student' && (
-                                <select className="w-full border border-gray-200 p-3 rounded-lg bg-white outline-none" value={formData.courseId} onChange={e => setFormData({...formData, courseId: e.target.value})}>
-                                    <option value="">-- Asignar curso (opcional) --</option>
-                                    {courses.map(c => (
-                                        <option key={c.id} value={c.id}>{c.title || c.name || `Curso ${c.id}`}</option>
-                                    ))}
-                                </select>
-                            )}
                             {editingId && (
                                 <label className="flex items-center gap-2 cursor-pointer">
                                     <input type="checkbox" checked={formData.enabled} onChange={e => setFormData({...formData, enabled: e.target.checked})} className="accent-formex-orange w-5 h-5"/>
