@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { Plus, Trash2, ArrowLeft } from 'lucide-react';
-import MaterialService from '../../services/materialService';
+import MaterialService from '../../services/MaterialService.js';
 
 const CourseMaterials = () => {
     const { courseId, sessionId } = useParams();
