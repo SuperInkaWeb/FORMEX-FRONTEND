@@ -1,26 +1,46 @@
-import { Navigate } from "react-router-dom";
-import { useAuth0 } from "@auth0/auth0-react";
-import { useUser } from "../context/UserContext";
+import React from 'react';
+import { Navigate, useLocation } from 'react-router-dom';
+// Usar el hook useAuth directamente desde AuthContext
+import { useAuth } from '../context/AuthContext';
 
 const ProtectedRoute = ({ children, allowedRoles }) => {
-  const { isAuthenticated, isLoading } = useAuth0();
-  const { userInfo, loadingUser } = useUser();
+    // Obtenemos el contexto de autenticación
+    const auth = useAuth();
 
-  if (isLoading || loadingUser) return <p>Cargando...</p>;
+    // Si el contexto no está disponible (componente fuera de <AuthProvider>) evitamos romper
+    if (!auth) {
+        console.error('ProtectedRoute: useAuth() devolvió undefined. Asegúrate de envolver la app con <AuthProvider>.');
+        return <Navigate to="/login" replace />;
+    }
 
-  if (!isAuthenticated) return <Navigate to="/" replace />;
+    const { isAuthenticated, hasRole, loading } = auth;
+    const location = useLocation();
 
-  if (!userInfo) return <p>Cargando usuario...</p>;
+    // 1. Esperar a que Auth0 termine de cargar (Evita redirecciones prematuras)
+    if (loading) {
+        return (
+            <div className="flex justify-center items-center h-screen">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500"></div>
+            </div>
+        );
+    }
 
-  const hasRole = (role) => {
-    return userInfo.roles?.some(r => r.name === role || r === role);
-  };
+    // 2. Si no está autenticado, mandar al login
+    if (!isAuthenticated) {
+        return <Navigate to="/login" state={{ from: location }} replace />;
+    }
 
-  if (allowedRoles && !allowedRoles.some(role => hasRole(role))) {
-    return <Navigate to="/unauthorized" replace />;
-  }
+    // 3. Verificación de Roles (Si la ruta lo requiere)
+    if (allowedRoles && allowedRoles.length > 0) {
+        const hasPermission = allowedRoles.some(role => hasRole(role));
 
-  return children;
+        if (!hasPermission) {
+            return <Navigate to="/" replace />;
+        }
+    }
+
+    // 4. Si pasa todo, mostrar el contenido
+    return children;
 };
 
 export default ProtectedRoute;

@@ -22,15 +22,27 @@ const StatCard = ({ title, value, icon, color, subtext }) => (
 const DashboardHome = () => {
 
     const [stats, setStats] = useState(null);
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(true);const [error, setError] = useState(null);
 
     useEffect(() => {
         const fetchStats = async () => {
             try {
                 const res = await api.get('/api/admin/stats');
+                console.debug('[DashboardHome] /api/admin/stats response:', res);
                 setStats(res.data);
             } catch (error) {
+                // Mejor diagnostico visible en UI
                 console.error('Error cargando estadísticas:', error);
+                let message = 'Error al cargar estadísticas';
+                if (error.response) {
+                    // axios error con respuesta
+                    message = `Error ${error.response.status}: ${error.response.statusText}` + (error.response.data ? ` - ${JSON.stringify(error.response.data)}` : '');
+                } else if (error.request) {
+                    message = 'No se recibió respuesta del servidor (comprobar API_URL / token)';
+                } else if (error.message) {
+                    message = error.message;
+                }
+                setError(message);
             } finally {
                 setLoading(false);
             }
@@ -40,6 +52,13 @@ const DashboardHome = () => {
     }, []);
 
     if (loading) return <p>Cargando estadísticas...</p>;
+    if (error) return (
+        <div className="p-6 bg-red-50 border border-red-200 rounded text-sm text-red-800">
+            <h3 className="font-bold mb-2">No se pudieron cargar las estadísticas</h3>
+            <pre className="whitespace-pre-wrap">{error}</pre>
+            <p className="text-xs text-gray-500 mt-2">Comprueba que la API está en ejecución, que el token está en localStorage y que <code>VITE_API_URL</code> apunta al backend correcto.</p>
+        </div>
+    );
     if (!stats) return <p>Error al cargar estadísticas</p>;
 
     return (

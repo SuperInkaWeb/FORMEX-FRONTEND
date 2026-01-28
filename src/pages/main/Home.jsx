@@ -114,7 +114,6 @@ const Home = () => (
             <h2 className="text-3xl font-bold mb-4">¿Listo para aprender?</h2>
             <Link to="/catalog" className="text-formex-orange font-bold hover:underline">Ver todos los cursos &rarr;</Link>
         </div>
-        <Footer />
     </div>
 );
 

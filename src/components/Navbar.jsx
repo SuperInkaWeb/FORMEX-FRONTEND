@@ -1,25 +1,26 @@
 import React, { useState, useEffect } from 'react';
-import { Menu, X, ArrowRight, User, LogOut } from 'lucide-react';
+import { Menu, X, User, LogOut } from 'lucide-react';
 import logoFormex from "../assets/formex_logo.jpg";
 import { useAuth0 } from "@auth0/auth0-react";
 import { useUser } from "../context/UserContext";
+import { useAuth } from '../context/AuthContext';
+import { getRoleNames } from '../utils/roles';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 
 const Navbar = () => {
   // 🔹 HOOKS SIEMPRE ARRIBA
   const [isOpen, setIsOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
- const userContext = useUser();
- const navigate = useNavigate();
+  const userContext = useUser();
+  const navigate = useNavigate();
+  const location = useLocation();
 
-const userInfo = userContext?.userInfo;
+  const auth = useAuth();
+  const userInfo = userContext?.userInfo;
+  const authUser = auth ? auth.user : null; // obtener usuario normalizado via useAuth hook de AuthContext
 
+  const roleNames = getRoleNames({ userInfo, authUser });
+  const isStudent = roleNames.includes("ROLE_STUDENT");
 
- const roleNames = userInfo?.roles?.map(r => r.name) || [];
-
-const isStudent = roleNames.includes("ROLE_STUDENT");
-const isAdmin = roleNames.includes("ROLE_ADMIN");
-const isInstructor = roleNames.includes("ROLE_INSTRUCTOR");
   const {
     user,
     isAuthenticated,
@@ -28,51 +29,44 @@ const isInstructor = roleNames.includes("ROLE_INSTRUCTOR");
     logout
   } = useAuth0();
 
-  const location = useLocation();
-useEffect(() => {
-  // 1️⃣ Espera auth y user
-  if (!isAuthenticated || !userInfo) return;
+  useEffect(() => {
+    if (!isAuthenticated || !userInfo) return;
 
-  const roleNames = userInfo.roles?.map(r => r.name) || [];
+    const localRoles = roleNames;
 
-  // 2️⃣ SOLO páginas públicas
-  const isPublicPage =
-    location.pathname === "/" ||
-    location.pathname.startsWith("/catalog") ||
-    location.pathname.startsWith("/about") ||
-    location.pathname.startsWith("/blog") ||
-    location.pathname.startsWith("/faq");
+    const isPublicPage =
+      location.pathname === "/" ||
+      location.pathname.startsWith("/catalog") ||
+      location.pathname.startsWith("/about") ||
+      location.pathname.startsWith("/blog") ||
+      location.pathname.startsWith("/faq");
 
-  if (!isPublicPage) return;
+    if (!isPublicPage) return;
 
-  // 3️⃣ ADMIN
-  if (
-    roleNames.includes("ROLE_ADMIN") &&
-    location.pathname !== "/admin"
-  ) {
-    navigate("/admin", { replace: true });
-    return;
+    if (
+      localRoles.includes("ROLE_ADMIN") &&
+      location.pathname !== "/admin"
+    ) {
+      navigate("/admin", { replace: true });
+      return;
+    }
+
+    if (
+      localRoles.includes("ROLE_INSTRUCTOR") &&
+      location.pathname !== "/instructor"
+    ) {
+      navigate("/instructor", { replace: true });
+    }
+  }, [isAuthenticated, userInfo, roleNames, location.pathname, navigate]);
+
+  // Mientras Auth0 o el UserContext están cargando, no renderizar nada para evitar lecturas sobre undefined
+  if (isLoading || userContext?.loadingUser) {
+    return null;
   }
 
-  // 4️⃣ INSTRUCTOR
-  if (
-    roleNames.includes("ROLE_INSTRUCTOR") &&
-    location.pathname !== "/instructor"
-  ) {
-    navigate("/instructor", { replace: true });
-    return;
-  }
+  if (isAuthenticated && !userInfo) return null;
 
-  // 5️⃣ ESTUDIANTE → NO SE TOCA
-}, [isAuthenticated, userInfo, location.pathname, navigate]);
-
-
-  // 🔹 DESPUÉS de los hooks, recién acá decides renderizar
-  if (isLoading) return null;
-
-if (isAuthenticated && !userInfo) return null;
-
-// 🔜 luego desde roles
+  // 🔜 luego desde roles
 
   const isActive = (path) =>
     location.pathname === path
@@ -80,9 +74,7 @@ if (isAuthenticated && !userInfo) return null;
       : 'text-gray-600 hover:text-formex-orange font-medium';
 
   return (
-    <nav className={`fixed w-full z-50 transition-all duration-300 border-b ${
-      scrolled ? 'bg-white/95 backdrop-blur-md border-gray-100 py-3 shadow-sm' : 'bg-white border-transparent py-5'
-    }`}>
+    <nav className={"fixed w-full z-50 transition-all duration-300 border-b bg-white border-transparent py-5"}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center">
 

@@ -1,18 +1,22 @@
 import axios from 'axios';
 
-// 1. Crear instancia apuntando a tu Backend Spring Boot
+// Usar variable de entorno con fallback a localhost
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080';
+
 const api = axios.create({
-    baseURL: 'http://localhost:8080', // Puerto de Java
+    baseURL: API_URL, // Mantenemos la base URL limpia (sin /api extra si tus rutas ya lo tienen)
     headers: {
         'Content-Type': 'application/json',
     },
 });
 
-// 2. Interceptor: Antes de cada petición, inyectar el Token si existe
+// Interceptor para agregar el Token (solo si existe y es válido)
 api.interceptors.request.use(
     (config) => {
         const token = localStorage.getItem('token');
-        if (token) {
+
+        // CORRECCIÓN CRÍTICA: Solo agregamos el header si el token existe Y no es "undefined" o "null" (texto)
+        if (token && token !== 'undefined' && token !== 'null') {
             config.headers['Authorization'] = `Bearer ${token}`;
         }
         return config;

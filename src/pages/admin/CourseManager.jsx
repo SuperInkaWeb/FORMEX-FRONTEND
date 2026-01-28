@@ -41,7 +41,7 @@ const openAssignInstructorModal = async (course) => {
         try {
             let res;
             try {
-                res = await api.get("/api/users?role=INSTRUCTOR");
+                res = await api.get("/api/admin/users?role=INSTRUCTOR");
             } catch (e) {
                 // fallback to admin endpoint if available
                 res = await api.get("/api/admin/users?role=INSTRUCTOR");
