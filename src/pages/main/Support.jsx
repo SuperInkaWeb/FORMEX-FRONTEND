@@ -28,7 +28,8 @@ const Support = () => {
     setLoading(true);
 
     try {
-      const response = await fetch("http://localhost:8080/api/support", {
+      const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8080";
+      const response = await fetch(`${API_URL}/api/support`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
@@ -79,7 +80,7 @@ const Support = () => {
           <div className="space-y-8">
             <div className="flex items-start gap-4">
               <div className="w-12 h-12 bg-orange-50 rounded-full flex items-center justify-center text-formex-orange">
-                <Mail size={24}/>
+                <Mail size={24} />
               </div>
               <div>
                 <h3 className="font-bold text-gray-900 text-lg">Correo Electrónico</h3>
@@ -90,7 +91,7 @@ const Support = () => {
 
             <div className="flex items-start gap-4">
               <div className="w-12 h-12 bg-lime-50 rounded-full flex items-center justify-center text-lime-700">
-                <Phone size={24}/>
+                <Phone size={24} />
               </div>
               <div>
                 <h3 className="font-bold text-gray-900 text-lg">Teléfono / WhatsApp</h3>
@@ -101,7 +102,7 @@ const Support = () => {
 
             <div className="flex items-start gap-4">
               <div className="w-12 h-12 bg-gray-50 rounded-full flex items-center justify-center text-gray-700">
-                <MapPin size={24}/>
+                <MapPin size={24} />
               </div>
               <div>
                 <h3 className="font-bold text-gray-900 text-lg">Oficina Principal</h3>
@@ -180,7 +181,7 @@ const Support = () => {
               className="w-full py-4 bg-formex-dark text-white font-bold rounded-xl hover:bg-black transition-all shadow-lg flex items-center justify-center gap-2 group disabled:opacity-50"
             >
               {loading ? "Enviando..." : "Enviar Mensaje"}
-              <Send size={18} className="group-hover:translate-x-1 transition-transform"/>
+              <Send size={18} className="group-hover:translate-x-1 transition-transform" />
             </button>
           </form>
         </div>

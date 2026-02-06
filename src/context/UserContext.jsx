@@ -90,7 +90,8 @@ export const UserProvider = ({ children }) => {
         }
 
         // Obtener info desde backend
-        const res = await fetch("http://localhost:8080/api/me", {
+        const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080';
+        const res = await fetch(`${API_URL}/api/me`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
