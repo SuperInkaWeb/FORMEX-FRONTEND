@@ -18,10 +18,15 @@ const CoursesManager = () => {
     const [courses, setCourses] = useState([]);
     const [categories, setCategories] = useState([]);
     const [showModal, setShowModal] = useState(false);
+
     const [editingId, setEditingId] = useState(null);
 
 
 const [selectedFile, setSelectedFile] = useState(null);
+
+
+
+
     const [showAssignModal, setShowAssignModal] = useState(false);
 const [selectedCourse, setSelectedCourse] = useState(null);
 const [instructors, setInstructors] = useState([]);
@@ -138,6 +143,7 @@ const assignInstructor = async (instructorId) => {
         });
         setShowModal(true);
     };
+
 
    const handleSubmit = async (e) => {
   e.preventDefault();
@@ -333,6 +339,7 @@ const handleDelete = async (courseId) => {
                             </select>
                             <div className="border border-dashed border-gray-300 rounded-lg p-4 bg-gray-50 hover:bg-orange-50 transition-colors">
                                 <label className="cursor-pointer flex flex-col items-center gap-2">
+
                                     <UploadCloud className="text-gray-400" />
                            <span className="text-sm text-gray-500 font-medium">
                              Click para subir portada
@@ -345,20 +352,20 @@ const handleDelete = async (courseId) => {
                                    />
                                 </label>
                                 {selectedFile ? (
-                              <img
-                                src={URL.createObjectURL(selectedFile)}
-                             alt="Preview"
-                               className="mt-3 h-32 w-full object-cover rounded-lg border border-gray-200"
-                              />
-                              ) : (
-                                          formData.imageUrl && (
-                                                 <img
-                                          src={formData.imageUrl}
-                                           alt="Preview"
-                                 className="mt-3 h-32 w-full object-cover rounded-lg border border-gray-200"
-                                          />
-                                    )
-                                )}
+  <img
+    src={URL.createObjectURL(selectedFile)}
+    alt="Preview"
+    className="mt-3 h-32 w-full object-cover rounded-lg border border-gray-200"
+  />
+) : (
+  formData.imageUrl && (
+    <img
+      src={formData.imageUrl}
+      alt="Preview"
+      className="mt-3 h-32 w-full object-cover rounded-lg border border-gray-200"
+    />
+  )
+)}
 
                             </div>
                             <div className="flex gap-3 pt-4">
@@ -366,7 +373,7 @@ const handleDelete = async (courseId) => {
                                 <button type="submit" className="flex-1 py-3 bg-formex-orange text-white rounded-lg hover:bg-orange-600 font-bold shadow-lg shadow-orange-200">
   Guardar
 </button>
-                            </div>
+                     </div>
                         </form>
                     </div>
                 </div>

@@ -4,7 +4,9 @@ import CourseService from '../../services/courseService';
 import { Calendar, Clock, Video, Trash2, Plus, ArrowLeft, CheckCircle, Edit2, Filter } from 'lucide-react';
 
 const CourseSessions = () => {
+
   const { courseId } = useParams();
+
     const [course, setCourse] = useState(null);
     const [sessions, setSessions] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -25,13 +27,17 @@ const CourseSessions = () => {
 
     useEffect(() => {
         loadData();
+
     }, [courseId]);
+
 
     const loadData = async () => {
         try {
             const [courseData, sessionsData] = await Promise.all([
+
                 CourseService.getCourseById(courseId),
                 CourseService.getSessionsByCourse(courseId)
+
             ]);
             setCourse(courseData);
             setSessions(sessionsData);
@@ -91,7 +97,7 @@ const CourseSessions = () => {
                 startTime: finalDateTime,
                 durationMinutes: formData.durationMinutes,
                 meetingLink: formData.meetingLink,
-                courseId: id
+                courseId: courseId
             };
 
             if (editingId) {
