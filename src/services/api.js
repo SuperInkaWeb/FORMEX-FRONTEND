@@ -14,9 +14,7 @@ if (import.meta.env.PROD && API_URL.includes('localhost')) {
 
 const api = axios.create({
     baseURL: API_URL, // Mantenemos la base URL limpia (sin /api extra si tus rutas ya lo tienen)
-    headers: {
-        'Content-Type': 'application/json',
-    },
+
 });
 
 // Interceptor para agregar el Token (solo si existe y es válido)

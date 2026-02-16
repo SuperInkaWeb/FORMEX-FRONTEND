@@ -40,8 +40,7 @@ const [instructors, setInstructors] = useState([]);
         const [assigning, setAssigning] = useState(null);
 const openAssignInstructorModal = async (course) => {
     setSelectedCourse(course);
-    setShowAssignModal(true);
-        setInstructors([]);
+    setShowAssiguctors([]);
         setInstructorsError(null);
         setInstructorsLoading(true);
         try {
@@ -161,13 +160,11 @@ const assignInstructor = async (instructorId) => {
     }
 
     if (editingId) {
-      await api.put(`/api/courses/${editingId}`, data, {
-        headers: { "Content-Type": "multipart/form-data" }
-      });
+      await api.put(`/api/courses/${editingId}`, data);
+
     } else {
-      await api.post("/api/courses", data, {
-        headers: { "Content-Type": "multipart/form-data" }
-      });
+     await api.post("/api/courses", data);
+
     }
 
     setShowModal(false);
@@ -318,7 +315,6 @@ const handleDelete = async (courseId) => {
 )}
 
        
-
             {showModal && (
                 <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 backdrop-blur-sm">
                     <div className="bg-white rounded-2xl p-8 max-w-lg w-full max-h-[90vh] overflow-y-auto shadow-2xl">

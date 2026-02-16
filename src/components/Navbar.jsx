@@ -29,35 +29,20 @@ const Navbar = () => {
     logout
   } = useAuth0();
 
-  useEffect(() => {
-    if (!isAuthenticated || !userInfo) return;
+useEffect(() => {
+  if (!isAuthenticated || !userInfo) return;
 
-    const localRoles = roleNames;
+  const localRoles = roleNames;
+  const isLoginCallbackPage =
+    location.pathname === "/login" || location.pathname === "/callback";
 
-    const isPublicPage =
-      location.pathname === "/" ||
-      location.pathname.startsWith("/catalog") ||
-      location.pathname.startsWith("/about") ||
-      location.pathname.startsWith("/blog") ||
-      location.pathname.startsWith("/faq");
+  if (!isLoginCallbackPage) return;
 
-    if (!isPublicPage) return;
+  if (localRoles.includes("ROLE_ADMIN")) navigate("/admin", { replace: true });
+  else if (localRoles.includes("ROLE_INSTRUCTOR")) navigate("/instructor", { replace: true });
+  else if (localRoles.includes("ROLE_STUDENT")) navigate("/student", { replace: true });
+}, [isAuthenticated, userInfo, roleNames, location.pathname, navigate]);
 
-    if (
-      localRoles.includes("ROLE_ADMIN") &&
-      location.pathname !== "/admin"
-    ) {
-      navigate("/admin", { replace: true });
-      return;
-    }
-
-    if (
-      localRoles.includes("ROLE_INSTRUCTOR") &&
-      location.pathname !== "/instructor"
-    ) {
-      navigate("/instructor", { replace: true });
-    }
-  }, [isAuthenticated, userInfo, roleNames, location.pathname, navigate]);
 
   // Mientras Auth0 o el UserContext están cargando, no renderizar nada para evitar lecturas sobre undefined
   if (isLoading || userContext?.loadingUser) {
@@ -94,6 +79,7 @@ const Navbar = () => {
 {isStudent && (
   <Link
     to="/student"
+    target="_blank"
     className="px-5 py-2.5 rounded-lg font-bold
                text-formex-orange bg-formex-orange/10
                hover:bg-formex-orange hover:text-white
@@ -102,6 +88,9 @@ const Navbar = () => {
     Intranet
   </Link>
 )}
+
+
+
 
           </div>
 
