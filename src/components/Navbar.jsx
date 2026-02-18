@@ -79,7 +79,6 @@ useEffect(() => {
 {isStudent && (
   <Link
     to="/student"
-    target="_blank"
     className="px-5 py-2.5 rounded-lg font-bold
                text-formex-orange bg-formex-orange/10
                hover:bg-formex-orange hover:text-white

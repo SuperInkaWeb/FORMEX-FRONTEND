@@ -45,7 +45,7 @@ export const AuthProvider = ({ children }) => {
                     setToken(accessToken);
 
                     const namespace = 'https://formex.com/roles';
-                    const userRoles = auth0User[namespace] || ['ROLE_STUDENT'];
+                   const userRoles = auth0User[namespace] ?? [];
 
                     setUser({
                         sub: auth0User.sub,
@@ -57,13 +57,18 @@ export const AuthProvider = ({ children }) => {
                     });
                     setRoles(userRoles);
 
+                    
+
                     // Redirección inteligente SOLO si venimos del login explícito
                     // (Evita redirigir al recargar la página si ya estás en una ruta protegida)
                     const currentPath = window.location.pathname;
-                    if (currentPath === '/login' || currentPath === '/callback') {
-                        if (userRoles.includes('ROLE_ADMIN')) navigate('/admin');
-                        else if (userRoles.includes('ROLE_INSTRUCTOR')) navigate('/instructor');
-                    }
+                   if (currentPath === '/login' || currentPath === '/callback') {
+    if (userRoles.includes('ROLE_ADMIN')) navigate('/admin');
+    else if (userRoles.includes('ROLE_INSTRUCTOR')) navigate('/instructor');
+    else if (userRoles.includes('ROLE_STUDENT')) navigate('/student');
+    else navigate('/'); // fallback
+}
+
 
                 } catch (error) {
                     console.error("Error Auth0:", error);

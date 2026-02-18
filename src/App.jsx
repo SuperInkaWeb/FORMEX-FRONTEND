@@ -70,7 +70,12 @@ const App = () => {
     const location = useLocation();
 
     // Rutas donde NO queremos mostrar Navbar ni Footer
-    const hideLayout = location.pathname.startsWith("/admin");
+    const hideLayout =
+  location.pathname.startsWith("/admin") ||
+  location.pathname.startsWith("/student") ||
+  location.pathname.startsWith("/instructor");
+
+
 
     return (
         <div className="flex flex-col min-h-screen">
