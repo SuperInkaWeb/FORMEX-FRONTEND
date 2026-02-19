@@ -40,7 +40,7 @@ const [instructors, setInstructors] = useState([]);
         const [assigning, setAssigning] = useState(null);
 const openAssignInstructorModal = async (course) => {
     setSelectedCourse(course);
-    setShowAssiguctors([]);
+    setShowAssignModal(true);
         setInstructorsError(null);
         setInstructorsLoading(true);
         try {

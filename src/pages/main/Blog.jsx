@@ -1,7 +1,6 @@
 import React from 'react';
 import { Calendar, User, ArrowRight } from 'lucide-react';
-import Navbar from '../../components/Navbar';
-import Footer from '../../components/Footer';
+
 
 const Blog = () => {
     const posts = [
@@ -36,7 +35,7 @@ const Blog = () => {
 
     return (
         <div className="min-h-screen bg-white font-sans">
-            <Navbar />
+     
 
             <section className="pt-32 pb-20 bg-gray-50">
                 <div className="max-w-7xl mx-auto px-4 text-center">
@@ -81,7 +80,7 @@ const Blog = () => {
                 </div>
             </section>
 
-            <Footer />
+
         </div>
     );
 };

@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { ChevronDown, ChevronUp, HelpCircle } from 'lucide-react';
-import Navbar from '../../components/Navbar';
-import Footer from '../../components/Footer';
+
 
 const FaqItem = ({ question, answer }) => {
     const [isOpen, setIsOpen] = useState(false);
@@ -35,7 +34,7 @@ const Faq = () => {
 
     return (
         <div className="min-h-screen bg-gray-50 font-sans">
-            <Navbar />
+        
 
             <div className="pt-32 pb-20 max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="text-center mb-12">
@@ -55,7 +54,7 @@ const Faq = () => {
                 </div>
             </div>
 
-            <Footer />
+      
         </div>
     );
 };

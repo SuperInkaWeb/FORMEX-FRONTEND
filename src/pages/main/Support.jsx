@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { Mail, Phone, MapPin, Send } from 'lucide-react';
-import Navbar from '../../components/Navbar';
-import Footer from '../../components/Footer';
+
 
 const Support = () => {
   const [formData, setFormData] = useState({
@@ -60,7 +59,7 @@ const Support = () => {
 
   return (
     <div className="min-h-screen bg-white font-sans">
-      <Navbar />
+     
 
       <div className="pt-32 pb-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid lg:grid-cols-2 gap-16">
 
@@ -188,7 +187,6 @@ const Support = () => {
 
       </div>
 
-      <Footer />
     </div>
   );
 };

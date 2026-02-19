@@ -1,13 +1,12 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Target, Heart, Users, Globe, ArrowRight, CheckCircle } from 'lucide-react';
-import Navbar from '../../components/Navbar.jsx';
-import Footer from '../../components/Footer.jsx';
+
 
 const About = () => {
     return (
         <div className="min-h-screen bg-white font-sans">
-            <Navbar />
+          
 
             {/* 1. HERO SECTION (Dark Mode para contraste) */}
             <section className="pt-32 pb-20 bg-formex-dark text-white relative overflow-hidden">
@@ -150,7 +149,7 @@ const About = () => {
                 </div>
             </section>
 
-            <Footer />
+        
         </div>
     );
 };

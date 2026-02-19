@@ -1,8 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Monitor, Users, Trophy, CheckCircle, MessageCircle, Star, Zap, Target, Award } from 'lucide-react';
-import Navbar from '../../components/Navbar';
-import Footer from '../../components/Footer';
+
 
 const Benefits = () => {
     const benefitsList = [
@@ -46,7 +45,7 @@ const Benefits = () => {
 
     return (
         <div className="min-h-screen bg-white font-sans">
-            <Navbar />
+           
 
             {/* Hero Section */}
             <section className="pt-32 pb-20 bg-formex-dark text-white relative overflow-hidden">
@@ -124,7 +123,7 @@ const Benefits = () => {
                 </div>
             </section>
 
-            <Footer />
+       
         </div>
     );
 };

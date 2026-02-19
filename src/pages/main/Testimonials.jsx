@@ -1,7 +1,6 @@
 import React from 'react';
 import { Star, Quote } from 'lucide-react';
-import Navbar from '../../components/Navbar';
-import Footer from '../../components/Footer';
+
 
 const Testimonials = () => {
     const reviews = [
@@ -15,7 +14,7 @@ const Testimonials = () => {
 
     return (
         <div className="min-h-screen bg-white font-sans">
-            <Navbar />
+          
 
             <section className="pt-32 pb-20 bg-formex-dark text-white text-center">
                 <div className="max-w-4xl mx-auto px-4">
@@ -49,7 +48,7 @@ const Testimonials = () => {
                 </div>
             </section>
 
-            <Footer />
+          
         </div>
     );
 };
