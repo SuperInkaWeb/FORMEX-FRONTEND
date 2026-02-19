@@ -141,13 +141,14 @@ const App = () => {
                         }
                     />
                     <Route
-                        path="/instructor/course/:courseId/materials"
-                        element={
-                            <ProtectedRoute allowedRoles={["ROLE_INSTRUCTOR"]}>
-                                <InstructorCourseMaterials />
-                            </ProtectedRoute>
-                        }
-                    />
+                  path="/instructor/course/:courseId/session/:sessionId/materials"
+                  element={
+                    <ProtectedRoute allowedRoles={["ROLE_INSTRUCTOR"]}>
+                     <InstructorCourseMaterials /> {/* o un nuevo componente específico */}
+                       </ProtectedRoute>
+                         }
+                        />
+
                     <Route
                         path="/instructor/course/:courseId/attendance"
                         element={
@@ -199,13 +200,22 @@ const App = () => {
                         }
                     />
                     <Route
-                        path="/student/course/:courseId/attendance"
-                        element={
-                            <ProtectedRoute allowedRoles={["ROLE_STUDENT"]}>
-                                <StudentAttendancePage />
-                            </ProtectedRoute>
+                  path="/student/course/:courseId/attendance"
+                    element={
+                      <ProtectedRoute allowedRoles={["ROLE_STUDENT"]}>
+                         <StudentAttendancePage />
+                     </ProtectedRoute>
                         }
-                    />
+                      />
+                    <Route
+                     path="/instructor/course/:courseId/attendance/:sessionId"
+                      element={
+                       <ProtectedRoute allowedRoles={["ROLE_INSTRUCTOR"]}>
+                                <InstructorAttendancePage />
+                              </ProtectedRoute>
+                           }
+                         />
+
                     <Route
                         path="/student/course/:courseId/resources/:resourceId/forum"
                         element={
