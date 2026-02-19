@@ -9,7 +9,8 @@ const ResourceForum = () => {
   const { courseId, resourceId } = useParams();
   const [messages, setMessages] = useState([]);
   const [text, setText] = useState("");
-const { user } = useAuth0();
+const { user, getAccessTokenSilently } = useAuth0();
+
 
 const authorName =
   user?.name ||
@@ -20,29 +21,43 @@ const authorName =
 
   // 🔹 Cargar mensajes desde el backend
   useEffect(() => {
-    const fetchMessages = async () => {
-      try {
-        const data = await ForumService.getMessages(courseId, resourceId);
-        setMessages(data);
-      } catch (error) {
-        console.error("Error cargando mensajes:", error);
-      }
-    };
-    fetchMessages();
-  }, [courseId, resourceId]);
+  const fetchMessages = async () => {
+    try {
+      const token = await getAccessTokenSilently({
+        authorizationParams: {
+          audience: import.meta.env.VITE_AUTH0_AUDIENCE
+        }
+      });
+
+      const data = await ForumService.getMessages(courseId, resourceId, token);
+      setMessages(data);
+    } catch (error) {
+      console.error("Error cargando mensajes:", error);
+    }
+  };
+  fetchMessages();
+}, [courseId, resourceId, getAccessTokenSilently]);
 
   // 🔹 Enviar mensaje al backend
-  const handleSend = async (e) => {
+ const handleSend = async (e) => {
   e.preventDefault();
   if (!text.trim() || !user) return;
 
   try {
+    const token = await getAccessTokenSilently({
+      authorizationParams: {
+        audience: import.meta.env.VITE_AUTH0_AUDIENCE
+      }
+    });
+
     const newMessage = await ForumService.createMessage(
       courseId,
       resourceId,
       `${authorName} (Instructor)`,
-      text
+      text,
+      token
     );
+
     setMessages((prev) => [...prev, newMessage]);
     setText("");
   } catch (error) {
@@ -50,17 +65,26 @@ const authorName =
   }
 };
 
+
   // 🔹 Eliminar mensaje en el backend
   const handleDelete = async (id) => {
-    if (window.confirm("¿Eliminar este mensaje?")) {
-      try {
-        await ForumService.deleteMessage(courseId, resourceId, id);
-        setMessages((prev) => prev.filter((m) => m.id !== id));
-      } catch (error) {
-        console.error("Error eliminando mensaje:", error);
+  if (!window.confirm("¿Eliminar este mensaje?")) return;
+
+  try {
+    const token = await getAccessTokenSilently({
+      authorizationParams: {
+        audience: import.meta.env.VITE_AUTH0_AUDIENCE
       }
-    }
-  };
+    });
+
+    await ForumService.deleteMessage(courseId, resourceId, id, token);
+
+    setMessages((prev) => prev.filter((m) => m.id !== id));
+  } catch (error) {
+    console.error("Error eliminando mensaje:", error);
+  }
+};
+
 
   return (
     <div className="min-h-screen bg-gray-50">

@@ -35,7 +35,7 @@ const Footer = () => (
             </div>
         </div>
         <div className="max-w-7xl mx-auto px-4 pt-8 border-t border-gray-800 text-center text-gray-500 text-sm">
-            © 2025 Formex Education. Hecho con código y café.
+            © 2026 Formex Education. Hecho con código y café.
         </div>
     </footer>
 );

@@ -6,28 +6,45 @@ const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8080";
 
 const ForumService = {
   // Obtener mensajes de un recurso
-  async getMessages(courseId, resourceId) {
-    const res = await axios.get(
-      `${API_URL}/api/courses/${courseId}/resources/${resourceId}/forum`
-    );
-    return res.data;
-  },
+  async getMessages(courseId, resourceId, token) {
+  const res = await axios.get(
+    `${API_URL}/api/courses/${courseId}/resources/${resourceId}/forum`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+  return res.data;
+},
 
   // Crear un nuevo mensaje
-  async createMessage(courseId, resourceId, author, content) {
-    const res = await axios.post(
-      `${API_URL}/api/courses/${courseId}/resources/${resourceId}/forum`,
-      { author, content }
-    );
-    return res.data;
-  },
+ async createMessage(courseId, resourceId, author, content, token) {
+  const res = await axios.post(
+    `${API_URL}/api/courses/${courseId}/resources/${resourceId}/forum`,
+    { author, content },
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+  return res.data;
+},
+
 
   // Eliminar un mensaje (solo instructor/admin)
-  async deleteMessage(courseId, resourceId, messageId) {
-    await axios.delete(
-      `${API_URL}/api/courses/${courseId}/resources/${resourceId}/forum/${messageId}`
-    );
-  },
+async deleteMessage(courseId, resourceId, messageId, token) {
+  await axios.delete(
+    `${API_URL}/api/courses/${courseId}/resources/${resourceId}/forum/${messageId}`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+}
 };
+
 
 export default ForumService;

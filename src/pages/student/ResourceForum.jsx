@@ -8,43 +8,61 @@ const ResourceForum = () => {
   const { courseId, resourceId } = useParams();
   const [messages, setMessages] = useState([]);
   const [text, setText] = useState("");
- const { user } = useAuth0();
- const authorName =
-  user?.name ||
-  user?.given_name ||
-  user?.nickname ||
-  user?.email ||
-  "Usuario";
+  const { user, getAccessTokenSilently } = useAuth0(); 
 
+  const authorName =
+    user?.name ||
+    user?.given_name ||
+    user?.nickname ||
+    user?.email ||
+    "Usuario";
 
+  // 🔹 Cargar mensajes
   useEffect(() => {
     const fetchMessages = async () => {
       try {
-        const data = await ForumService.getMessages(courseId, resourceId);
+        const token = await getAccessTokenSilently({
+          authorizationParams: {
+            audience: import.meta.env.VITE_AUTH0_AUDIENCE,
+          },
+        });
+
+        const data = await ForumService.getMessages(courseId, resourceId, token);
         setMessages(data);
       } catch (error) {
         console.error("Error cargando mensajes:", error);
       }
     };
     fetchMessages();
-  }, [courseId, resourceId]);
+  }, [courseId, resourceId, getAccessTokenSilently]);
 
+  // 🔹 Enviar mensaje
   const handleSend = async (e) => {
     e.preventDefault();
     if (!text.trim()) return;
+
     try {
+      const token = await getAccessTokenSilently({
+        authorizationParams: {
+          audience: import.meta.env.VITE_AUTH0_AUDIENCE,
+        },
+      });
+
       const newMessage = await ForumService.createMessage(
         courseId,
-         resourceId,
-      `${authorName} (Estudiante)`,
-        text
-        );
+        resourceId,
+        `${authorName} (Estudiante)`,
+        text,
+        token
+      );
+
       setMessages((prev) => [...prev, newMessage]);
       setText("");
     } catch (error) {
       console.error("Error enviando mensaje:", error);
     }
   };
+
 
   return (
     <div className="min-h-screen bg-gray-50">
