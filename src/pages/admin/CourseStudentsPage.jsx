@@ -77,6 +77,7 @@ const handlePaymentStatusChange = async (studentId, newStatus) => {
       const res = await CertificateService.generateCertificate({
         studentId: student.id,
         fullName: student.fullName,
+         courseId: Number(courseId), // ⭐ CLAVE
         courseName: student.courseName,
         attendancePercentage: percentage
       });

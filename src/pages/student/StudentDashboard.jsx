@@ -2,14 +2,32 @@ import React, { useEffect, useState } from 'react';
 import { BookOpen, LogOut, User, Loader, Calendar } from 'lucide-react';
 import { useAuth0 } from "@auth0/auth0-react";
 import StudentCourseService from '../../services/studentCourseService';
-import { Link, useNavigate } from 'react-router-dom';
 import SessionService from '../../services/sessionService';
+import api from '../../services/api';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
+
 
 const StudentDashboard = () => {
+const [points, setPoints] = useState(0);
 const { user, logout } = useAuth0();
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
 const navigate = useNavigate(); 
+const location = useLocation();
+
+// 🔹 Traer puntos reales desde backend al montar
+useEffect(() => {
+  const fetchPoints = async () => {
+    try {
+      const { data } = await api.get("/api/student/me");
+      setPoints(data.points); // Esto ahora será consistente
+    } catch (err) {
+      console.error("Error obteniendo puntos:", err);
+    }
+  };
+  fetchPoints();
+}, []);
+
  useEffect(() => {
   const fetchCoursesAndNextSession = async () => {
     try {
@@ -61,6 +79,13 @@ const navigate = useNavigate();
           <span className="font-bold text-lg">Student Panel</span>
         </div>
 <div className="flex items-center gap-3">
+  <div className="flex items-center gap-2 bg-yellow-50 border border-yellow-200 px-3 py-1.5 rounded-full">
+  <span className="text-yellow-600 text-sm font-bold">⭐</span>
+  <span className="text-sm font-bold text-yellow-700">
+    {points} pts
+  </span>
+</div>
+
   <User size={18} />
   <div className="leading-tight text-right">
     <p className="text-sm font-bold text-gray-800">

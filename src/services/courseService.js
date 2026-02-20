@@ -55,6 +55,14 @@ const CourseService = {
     return data;
   },
 
+    // 🔹 NUEVO: Desinscribir alumno de un curso
+  unenrollStudent: async (studentId, courseId) => {
+  const { data } = await api.delete(
+    `/api/students/courses/${courseId}/students/${studentId}`
+  );
+  return data;
+  },
+
   /* =========================
      CRUD CURSO
   ========================== */

@@ -58,6 +58,23 @@ const CourseEnrollStudentsPage = () => {
     }
   };
 
+  const handleUnenroll = async (studentId) => {
+  if (!window.confirm("¿Seguro que deseas desinscribir a este alumno?")) return;
+  try {
+    setEnrolling(studentId); // puedes reutilizar el estado `enrolling` o crear uno separado
+    await CourseService.unenrollStudent(studentId, courseId);
+    alert("✅ Alumno desinscrito");
+
+    // 🔹 Actualizar lista de alumnos visibles
+    loadStudents();
+  } catch (e) {
+    console.error(e);
+    alert("❌ Error al desinscribir");
+  } finally {
+    setEnrolling(null);
+  }
+};
+
   return (
     <div className="max-w-5xl mx-auto">
 
@@ -108,20 +125,32 @@ const CourseEnrollStudentsPage = () => {
                 <p className="text-sm text-gray-500">{student.email}</p>
               </div>
 
-              <button
-                onClick={() => handleEnroll(student.id)}
-                disabled={enrolling === student.id}
-                className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
-              >
-                {enrolling === student.id ? (
-                  "Inscribiendo..."
-                ) : (
-                  <>
-                    <UserPlus size={16} />
-                    Inscribir
-                  </>
-                )}
-              </button>
+                   <div className="flex items-center gap-2">
+  {/* Botón de Inscribir */}
+  <button
+    onClick={() => handleEnroll(student.id)}
+    disabled={enrolling === student.id}
+    className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
+  >
+    {enrolling === student.id ? (
+      "Inscribiendo..."
+    ) : (
+      <>
+        <UserPlus size={16} />
+        Inscribir
+      </>
+    )}
+  </button>
+
+  {/* Botón de Desinscribir */}
+  <button
+    onClick={() => handleUnenroll(student.id)}
+    disabled={enrolling === student.id}
+    className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
+  >
+    {enrolling === student.id ? "Procesando..." : "Desinscribir"}
+  </button>
+</div>
             </div>
           ))}
         </div>

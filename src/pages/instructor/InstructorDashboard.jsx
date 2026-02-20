@@ -4,6 +4,7 @@ import { BookOpen, Users, DollarSign, Plus, Calendar, User, LogOut, Loader } fro
 import CourseService from '../../services/courseService'; // Reusamos por ahora
 import { useAuth0 } from "@auth0/auth0-react";
 import SessionService from '../../services/sessionService';
+import api from '../../services/api';
 
 const InstructorDashboard = () => {
     const { user, logout } = useAuth0();
@@ -15,6 +16,22 @@ const InstructorDashboard = () => {
     const [selectedCourse, setSelectedCourse] = useState(null);
    const [nextSession, setNextSession] = useState(null);
    const [totalStudents, setTotalStudents] = useState(0);
+   const [points, setPoints] = useState(0);
+
+
+    useEffect(() => {
+  const fetchInstructorPoints = async () => {
+    try {
+      const { data } = await api.get("/api/instructor/me");
+      setPoints(data.points);
+    } catch (err) {
+      console.error("Error obteniendo puntos del instructor:", err);
+    }
+  };
+
+  fetchInstructorPoints();
+}, []);
+
 
     useEffect(() => {
   const fetchMyCoursesAndNextSession = async () => {
@@ -94,8 +111,14 @@ const InstructorDashboard = () => {
                         <span className="font-bold text-xl text-gray-800 tracking-tight">Instructor Panel</span>
                     </div>
 
-                    {/* Perfil Usuario (Arriba a la derecha) */}
+                     {/* Perfil Usuario (Arriba a la derecha) */}
                     <div className="flex items-center gap-4">
+                        <div className="flex items-center gap-2 bg-indigo-50 border border-indigo-200 px-3 py-1.5 rounded-full">
+                <span className="text-indigo-600 text-sm font-bold">🏆</span>
+              <span className="text-sm font-bold text-indigo-700">
+              {points} pts
+               </span>
+                 </div>
                         <div className="flex items-center gap-3 px-3 py-1.5 bg-gray-50 rounded-full border border-gray-100">
                             <div className="w-8 h-8 bg-purple-100 text-purple-600 rounded-full flex items-center justify-center">
                                 <User size={16}/>
@@ -222,6 +245,13 @@ const InstructorDashboard = () => {
                                         </td>
                                                 <td className="p-6 text-right">
                                                    <div className="inline-flex items-center gap-3">
+                                                     <Link
+                      to={`/instructor/course/${course.id}/evaluations`}
+                className="inline-flex items-center gap-2 px-4 py-2 bg-orange-50 text-orange-700 rounded-lg hover:bg-orange-100 transition-colors font-bold text-sm"
+                    >
+                    📄 Evaluaciones
+                    </Link>
+
     {/* 🔥 NUEVO BOTÓN RECURSOS */}
     <Link
         to={`/instructor/course/${course.id}/resources`}
