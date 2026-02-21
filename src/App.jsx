@@ -26,6 +26,8 @@ import StudentAttendancePage from "./pages/student/StudentAttendancePage";
 import StudentCourseResources from "./pages/student/StudentCourseResources";
 import StudentCourseSessions from "./pages/student/StudentCourseSessions";
 import StudentResourceForum from "./pages/student/ResourceForum";
+import StudentCourseEvaluations from "./pages/student/StudentCourseEvaluations";
+import StudentEvaluationSubmissions from "./pages/student/StudentEvaluationSubmissions";
 
 // Páginas de admin
 import AdminLayout from "./pages/admin/AdminLayout";
@@ -44,6 +46,8 @@ import InstructorAttendancePage from "./pages/instructor/AttendancePage";
 import InstructorCourseResources from "./pages/instructor/InstructorCourseResources";
 import InstructorResourceForum from "./pages/instructor/ResourceForum";
 import AuthCallback from "./components/AuthCallback.jsx";
+import InstructorCourseEvaluations from "./pages/instructor/InstructorCourseEvaluations";
+import InstructorEvaluationSubmissions from "./pages/instructor/InstructorEvaluationSubmissions";
 
 // NOTA: Eliminamos los imports de Login, Register, ForgotPassword locales
 // porque ahora usamos Auth0 Universal Login.
@@ -173,6 +177,23 @@ const App = () => {
                             </ProtectedRoute>
                         }
                     />
+                    <Route
+                    path="/instructor/course/:courseId/evaluations"
+                 element={
+             <ProtectedRoute allowedRoles={["ROLE_INSTRUCTOR"]}>
+          <InstructorCourseEvaluations />
+    </ProtectedRoute>
+  }
+/>
+
+                     <Route
+               path="/instructor/course/:courseId/evaluations/:evaluationId/submissions"
+          element={
+        <ProtectedRoute allowedRoles={["ROLE_INSTRUCTOR"]}>
+      <InstructorEvaluationSubmissions />
+    </ProtectedRoute>
+  }
+/>
 
                     {/* 🔹 Rutas protegidas para Estudiantes */}
                     <Route
@@ -224,6 +245,23 @@ const App = () => {
                             </ProtectedRoute>
                         }
                     />
+                    <Route
+                 path="/student/course/:courseId/evaluations"
+             element={
+          <ProtectedRoute allowedRoles={["ROLE_STUDENT"]}>
+       <StudentCourseEvaluations />
+    </ProtectedRoute>
+  }
+/>
+
+<Route
+                  path="/student/course/:courseId/evaluations/:evaluationId/submissions"
+               element={
+            <ProtectedRoute allowedRoles={["ROLE_STUDENT"]}>
+        <StudentEvaluationSubmissions />
+    </ProtectedRoute>
+  }
+/>
                 </Routes>
             </div>
 

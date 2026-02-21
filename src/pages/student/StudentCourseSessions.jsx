@@ -3,30 +3,45 @@ import { useParams, Link } from 'react-router-dom';
 import { Calendar, Clock, Video, ArrowLeft, Loader } from 'lucide-react';
 import SessionService from '../../services/sessionService';
 import CourseService from '../../services/courseService';
+import api from '../../services/api';
 
 const StudentCourseSessions = () => {
   const { courseId } = useParams();
   const [sessions, setSessions] = useState([]);
   const [course, setCourse] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [ratingEnabled, setRatingEnabled] = useState(false);
+const [rating, setRating] = useState(5);
+const [comment, setComment] = useState("");
 
   useEffect(() => {
-    const loadData = async () => {
-      try {
-        const [courseData, sessionsData] = await Promise.all([
-          CourseService.getCourseById(courseId),
-          SessionService.getSessionsByCourse(courseId)
-        ]);
-        setCourse(courseData);
-        setSessions(sessionsData || []);
-      } catch (err) {
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
-    };
-    loadData();
-  }, [courseId]);
+  const loadData = async () => {
+    try {
+      const [courseData, sessionsData] = await Promise.all([
+        CourseService.getCourseById(courseId),
+        SessionService.getSessionsByCourse(courseId)
+      ]);
+
+      setCourse(courseData);
+      setSessions(sessionsData || []);
+
+      // 🔥 Habilitar evaluación solo si hay sesiones pasadas
+      const now = new Date();
+      const hasPastSessions = sessionsData?.some(
+        s => new Date(s.startTime) < now
+      );
+
+      setRatingEnabled(hasPastSessions);
+
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  loadData();
+}, [courseId]);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -60,7 +75,14 @@ const StudentCourseSessions = () => {
             >
               Ver recursos
             </Link>
-          </div>
+          
+             <Link
+    to={`/student/course/${courseId}/evaluations`}
+    className="bg-red-600 text-white px-4 py-2 rounded-lg font-bold hover:bg-red-700 transition"
+  >
+    Evaluaciones
+  </Link>
+   </div>
         </div>
       </header>
 
@@ -75,52 +97,107 @@ const StudentCourseSessions = () => {
             <Calendar className="mx-auto text-gray-300 mb-4" size={48} />
             <p className="text-gray-500">No hay clases programadas aún.</p>
           </div>
-        ) : (
-          <div className="space-y-4">
-            {sessions.map((s, i) => (
-              <div
-                key={s.id}
-                className="bg-white p-6 rounded-xl border shadow-sm"
+      ) : (
+  <>
+    <div className="space-y-4">
+      {sessions.map((s, i) => (
+        <div
+          key={s.id}
+          className="bg-white p-6 rounded-xl border shadow-sm"
+        >
+          <h3 className="font-bold text-lg mb-1">
+            #{i + 1} {s.title}
+          </h3>
+
+          <div className="flex flex-wrap gap-4 text-sm text-gray-500">
+            <span className="flex items-center gap-1">
+              <Calendar size={14} />
+              {new Date(s.startTime).toLocaleDateString()}
+            </span>
+
+            <span className="flex items-center gap-1">
+              <Clock size={14} />
+              {new Date(s.startTime).toLocaleTimeString([], {
+                hour: '2-digit',
+                minute: '2-digit'
+              })}
+            </span>
+
+            {s.meetingLink && (
+              <a
+                href={s.meetingLink}
+                target="_blank"
+                rel="noreferrer"
+                className="flex items-center gap-1 text-blue-600 hover:underline"
               >
-                <h3 className="font-bold text-lg mb-1">
-                  #{i + 1} {s.title}
-                </h3>
-
-                <div className="flex flex-wrap gap-4 text-sm text-gray-500">
-                  <span className="flex items-center gap-1">
-                    <Calendar size={14} />
-                    {new Date(s.startTime).toLocaleDateString()}
-                  </span>
-                  <span className="flex items-center gap-1">
-                    <Clock size={14} />
-                    {new Date(s.startTime).toLocaleTimeString([], {
-                      hour: '2-digit',
-                      minute: '2-digit'
-                    })}
-                  </span>
-
-                  {s.meetingLink && (
-                    <a
-                      href={s.meetingLink}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="flex items-center gap-1 text-blue-600 hover:underline"
-                    >
-                      <Video size={14} /> Entrar a la clase
-                    </a>
-                  )}
-                </div>
-
-                {s.description && (
-                  <p className="text-sm text-gray-600 mt-2">{s.description}</p>
-                )}
-              </div>
-            ))}
+                <Video size={14} /> Entrar a la clase
+              </a>
+            )}
           </div>
-        )}
+
+          {s.description && (
+            <p className="text-sm text-gray-600 mt-2">{s.description}</p>
+          )}
+        </div>
+      ))}
+    </div>
+
+    {ratingEnabled && (
+      <div className="bg-white p-6 rounded-xl border mt-8">
+        <h3 className="font-bold text-lg mb-3">
+          Evalúa a tu instructor
+        </h3>
+
+        <label className="block text-sm mb-1">Calificación</label>
+        <select
+          value={rating}
+          onChange={(e) => setRating(e.target.value)}
+          className="border p-2 rounded w-full mb-3"
+        >
+          {[5,4,3,2,1].map(v => (
+            <option key={v} value={v}>{v} ⭐</option>
+          ))}
+        </select>
+
+        <textarea
+          placeholder="Comentario (opcional)"
+          value={comment}
+          onChange={(e) => setComment(e.target.value)}
+          className="border p-2 rounded w-full mb-3"
+        />
+
+        <button
+        onClick={async () => {
+  try {
+    await api.post("/api/ratings", {
+      instructorId: course.instructor.id,
+      courseId: course.id,
+      rating: Number(rating), // 🔴 importante
+      comment
+    });
+
+    alert("Gracias por tu evaluación ⭐");
+  } catch (error) {
+  if (error.response?.status === 409) {
+    alert("⚠️ Ya evaluaste a este instructor este mes");
+  } else {
+    alert("❌ Error al enviar la evaluación");
+  }
+}
+}}
+          className="bg-formex-orange text-white px-4 py-2 rounded"
+        >
+          Enviar evaluación
+        </button>
+      </div>
+    )}
+  </>
+        )
+        }
       </main>
     </div>
   );
 };
 
-export default StudentCourseSessions;
+
+export default StudentCourseSessions;  
