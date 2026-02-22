@@ -131,12 +131,19 @@ const InstructorDashboard = () => {
                             </div>
                         </div>
                         <button
-                            onClick={logout}
-                            className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
-                            title="Cerrar Sesión"
-                        >
-                            <LogOut size={20}/>
-                        </button>
+                     onClick={() =>
+                     logout({
+            logoutParams: {
+        returnTo: window.location.origin,
+             },
+            })
+             }
+             className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+           title="Cerrar Sesión"
+        >
+       <LogOut size={20}/>
+     </button>
+
                     </div>
                 </div>
             </header>
