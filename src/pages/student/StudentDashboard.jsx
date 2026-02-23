@@ -5,7 +5,7 @@ import StudentCourseService from '../../services/studentCourseService';
 import SessionService from '../../services/sessionService';
 import api from '../../services/api';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-
+import logo from '../../assets/formex_logo.jpg';
 
 const StudentDashboard = () => {
 const [points, setPoints] = useState(0);
@@ -73,9 +73,11 @@ useEffect(() => {
       {/* HEADER */}
       <header className="bg-white border-b h-16 px-6 flex justify-between items-center">
         <div className="flex items-center gap-2">
-          <div className="w-8 h-8 bg-formex-orange rounded-lg text-white font-bold flex items-center justify-center">
-            F
-          </div>
+        <img 
+        src={logo}
+        alt="Formex Logo"
+        className="w-8 h-8 object-contain"
+        />
           <span className="font-bold text-lg">Student Panel</span>
         </div>
 <div className="flex items-center gap-3">

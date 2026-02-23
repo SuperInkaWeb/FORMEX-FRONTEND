@@ -15,6 +15,7 @@ import About from "./pages/main/About";
 import Blog from "./pages/main/Blog";
 import Faq from "./pages/main/Faq";
 import Support from "./pages/main/Support";
+import BecomeInstructor from "./pages/main/BecomeInstructor";
 import Testimonials from "./pages/main/Testimonials";
 import Benefits from "./pages/main/Benefits";
 import Catalog from "./pages/courses/Catalog";
@@ -100,6 +101,7 @@ const App = () => {
                     <Route path="/blog" element={<Blog />} />
                     <Route path="/faq" element={<Faq />} />
                     <Route path="/support" element={<Support />} />
+                    <Route path="/be-instructor" element={<BecomeInstructor />} />
                     <Route path="/testimonials" element={<Testimonials />} />
 
                     {/* 🔹 Rutas de Autenticación (Redirección a Auth0) */}

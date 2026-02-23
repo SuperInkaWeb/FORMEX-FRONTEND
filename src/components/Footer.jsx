@@ -31,7 +31,8 @@ const Footer = () => (
                     <li><Link to="/faq" className="hover:text-white transition-colors">Preguntas Frecuentes</Link></li>
                     <li><Link to="/support" className="hover:text-white transition-colors">Contáctanos</Link></li>
                     <li><Link to="/about" className="hover:text-white transition-colors">Sobre Nosotros</Link></li>
-                </ul>
+                     <li><Link to="/be-instructor" className="hover:text-white transition-colors">Conviértete en Instructor</Link> </li>
+                 </ul>
             </div>
         </div>
         <div className="max-w-7xl mx-auto px-4 pt-8 border-t border-gray-800 text-center text-gray-500 text-sm">

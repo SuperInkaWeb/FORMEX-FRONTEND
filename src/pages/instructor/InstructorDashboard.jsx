@@ -5,6 +5,7 @@ import CourseService from '../../services/courseService'; // Reusamos por ahora
 import { useAuth0 } from "@auth0/auth0-react";
 import SessionService from '../../services/sessionService';
 import api from '../../services/api';
+import logo from '../../assets/formex_logo.jpg';
 
 const InstructorDashboard = () => {
     const { user, logout } = useAuth0();
@@ -106,10 +107,16 @@ const InstructorDashboard = () => {
             <header className="bg-white border-b border-gray-200 sticky top-0 z-30">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex justify-between items-center">
                     {/* Logo / Título */}
-                    <div className="flex items-center gap-2">
-                        <div className="w-8 h-8 bg-formex-orange rounded-lg flex items-center justify-center text-white font-bold text-lg">F</div>
-                        <span className="font-bold text-xl text-gray-800 tracking-tight">Instructor Panel</span>
-                    </div>
+                   <div className="flex items-center gap-2">
+    <img 
+        src={logo}
+        alt="Formex Logo"
+        className="w-8 h-8 object-contain"
+    />
+    <span className="font-bold text-xl text-gray-800 tracking-tight">
+        Instructor Panel
+    </span>
+   </div>
 
                      {/* Perfil Usuario (Arriba a la derecha) */}
                     <div className="flex items-center gap-4">
