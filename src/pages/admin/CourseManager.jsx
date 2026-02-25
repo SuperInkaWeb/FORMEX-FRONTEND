@@ -98,22 +98,69 @@ const openAssignInstructorModal = async (course) => {
 const assignInstructor = async (instructorId) => {
     if (!instructorId) return alert('Selecciona un instructor');
     setAssigning(instructorId);
+
     try {
-        // Backend expects PUT /api/courses/{id}/assign-instructor/{instructorId}
-        const res = await api.put(`/api/courses/${selectedCourse.id}/assign-instructor/${instructorId}`);
-        console.log('assign response', res);
-        alert(res?.data?.message || 'Instructor asignado');
-        setShowAssignModal(false);
-        setSelectedCourse(null);
-        setSelectedInstructorId(null);
-        loadData();
+        await api.put(
+            `/api/courses/${selectedCourse.id}/assign-instructor/${instructorId}`
+        );
+
+        alert('Instructor asignado');
+
+        // 🔥 Actualiza SOLO el curso actual
+        const assignedInstructor = instructors.find(i => i.id === instructorId);
+
+        setSelectedCourse(prev => ({
+            ...prev,
+            instructor: assignedInstructor
+        }));
+
+        // 🔥 Actualiza también la lista visual sin recargar todo
+        setCourses(prev =>
+            prev.map(c =>
+                c.id === selectedCourse.id
+                    ? { ...c, instructor: assignedInstructor }
+                    : c
+            )
+        );
+
     } catch (e) {
-        console.error('Error assigning instructor', e, e?.response);
-        const status = e?.response?.status;
-        const msg = e?.response?.data?.message || e?.response?.data || e.message || 'Error al asignar instructor';
-        setInstructorsError(`Error al asignar instructor${status ? ` (status ${status})` : ''}: ${msg}`);
-        alert('Error al asignar instructor — revisa el modal');
-    } finally { setAssigning(null); }
+        console.error('Error assigning instructor', e);
+        alert('Error al asignar instructor');
+    } finally {
+        setAssigning(null);
+    }
+};
+
+const unassignInstructor = async () => {
+  if (!selectedCourse?.instructor?.id) return;
+
+  setAssigning(selectedCourse.instructor.id);
+
+  try {
+    await api.put(`/api/courses/${selectedCourse.id}/unassign-instructor`);
+    alert("Instructor desasignado");
+
+    // 🔥 Actualiza el curso dentro del modal
+    setSelectedCourse(prev => ({
+      ...prev,
+      instructor: null
+    }));
+
+    // 🔥 Actualiza la tarjeta en la lista sin recargar todo
+    setCourses(prev =>
+      prev.map(c =>
+        c.id === selectedCourse.id
+          ? { ...c, instructor: null }
+          : c
+      )
+    );
+
+  } catch (e) {
+    console.error("Error unassigning", e);
+    alert("Error al desasignar instructor");
+  } finally {
+    setAssigning(null);
+  }
 };
 
     const initialForm = { title: '', description: '', price: '', level: 'PRINCIPIANTE', imageUrl: '', categoryId: 1 };
@@ -293,8 +340,30 @@ const handleDelete = async (courseId) => {
                                             <div className="text-xs text-gray-500 truncate">{i.email}</div>
                                         </div>
                                         <div className="flex items-center gap-2 pl-4">
-                                            <button disabled={assigning && assigning !== i.id} onClick={async () => { setSelectedInstructorId(i.id); await assignInstructor(i.id); }} className="py-2 px-3 bg-formex-orange text-white rounded-lg whitespace-nowrap">{assigning === i.id ? 'Asignando...' : 'Asignar'}</button>
-                                        </div>
+                                          <button
+  disabled={assigning && assigning !== i.id}
+  onClick={async () => {
+    setSelectedInstructorId(i.id);
+
+    // Si ya está asignado → desasignar
+    if (selectedCourse?.instructor?.id === i.id) {
+      await unassignInstructor();
+    } else {
+      await assignInstructor(i.id);
+    }
+  }}
+  className={`py-2 px-3 rounded-lg whitespace-nowrap text-white ${
+    selectedCourse?.instructor?.id === i.id
+      ? "bg-gray-500"
+      : "bg-formex-orange"
+  }`}
+>
+  {assigning === i.id
+    ? "Procesando..."
+    : selectedCourse?.instructor?.id === i.id
+    ? "Asignado"
+    : "Asignar"}
+</button>                              </div>
                                     </div>
                                 ))
                             )}

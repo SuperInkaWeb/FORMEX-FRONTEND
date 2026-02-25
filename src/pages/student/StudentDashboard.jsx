@@ -9,6 +9,7 @@ import logo from '../../assets/formex_logo.jpg';
 
 const StudentDashboard = () => {
 const [points, setPoints] = useState(0);
+const [showPointsRules, setShowPointsRules] = useState(false);
 const { user, logout } = useAuth0();
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -81,6 +82,21 @@ useEffect(() => {
           <span className="font-bold text-lg">Student Panel</span>
         </div>
 <div className="flex items-center gap-3">
+  <div className="relative hidden md:block">
+    <button
+      type="button"
+      onClick={() => setShowPointsRules(prev => !prev)}
+      className="text-xs text-gray-600 border border-gray-200 px-3 py-1.5 rounded-full hover:bg-gray-50 transition-colors"
+    >
+      Requisitos de puntos
+    </button>
+    {showPointsRules && (
+      <div className="absolute right-0 mt-2 w-72 bg-white border border-gray-200 rounded-lg shadow-sm p-3 z-40">
+        <p className="text-xs font-bold text-gray-700 mb-1">Como sumar puntos</p>
+        <p className="text-xs text-gray-600">+100 puntos al completar el curso al 100%.</p>
+      </div>
+    )}
+  </div>
   <div className="flex items-center gap-2 bg-yellow-50 border border-yellow-200 px-3 py-1.5 rounded-full">
   <span className="text-yellow-600 text-sm font-bold">⭐</span>
   <span className="text-sm font-bold text-yellow-700">

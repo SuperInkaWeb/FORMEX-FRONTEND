@@ -18,6 +18,7 @@ const InstructorDashboard = () => {
    const [nextSession, setNextSession] = useState(null);
    const [totalStudents, setTotalStudents] = useState(0);
    const [points, setPoints] = useState(0);
+   const [showPointsRules, setShowPointsRules] = useState(false);
 
 
     useEffect(() => {
@@ -120,6 +121,27 @@ const InstructorDashboard = () => {
 
                      {/* Perfil Usuario (Arriba a la derecha) */}
                     <div className="flex items-center gap-4">
+                        <div className="relative hidden md:block">
+                            <button
+                                type="button"
+                                onClick={() => setShowPointsRules(prev => !prev)}
+                                className="text-xs text-gray-600 border border-gray-200 px-3 py-1.5 rounded-full hover:bg-gray-50 transition-colors"
+                            >
+                                Requisitos de puntos
+                            </button>
+                            {showPointsRules && (
+                                <div className="absolute right-0 mt-2 w-80 bg-white border border-gray-200 rounded-lg shadow-sm p-3 z-40">
+                                    <p className="text-xs font-bold text-gray-700 mb-2">Como sumar puntos</p>
+                                    <ul className="text-xs text-gray-600 space-y-1">
+                                        <li>+10 por cada alumno que culmina y aprueba.</li>
+                                        <li>+5 extra por cada evaluacion aprobada con nota mayor o igual a 17.</li>
+                                        <li>+5 por alumno que califica con 4 estrellas o mas (una vez por mes).</li>
+                                        <li>+50 si dicta hasta 20 horas.</li>
+                                        <li>+10 por publicar nuevos temarios en Recursos.</li>
+                                    </ul>
+                                </div>
+                            )}
+                        </div>
                         <div className="flex items-center gap-2 bg-indigo-50 border border-indigo-200 px-3 py-1.5 rounded-full">
                 <span className="text-indigo-600 text-sm font-bold">🏆</span>
               <span className="text-sm font-bold text-indigo-700">
