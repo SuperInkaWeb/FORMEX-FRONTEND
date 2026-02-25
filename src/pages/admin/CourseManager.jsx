@@ -258,8 +258,8 @@ const handleDelete = async (courseId) => {
                                 <div className="flex items-center justify-center h-full text-gray-300"><Image size={32}/></div>
                             )}
                             <span className="absolute top-3 right-3 bg-white/90 backdrop-blur px-2 py-1 text-xs font-bold rounded-lg shadow-sm text-gray-800">
-                 ${course.price}
-               </span>
+                          S/ {Number(course.price).toFixed(2)}
+                         </span>
                         </div>
                         <div className="p-5 flex-1 flex flex-col">
                             <span className="text-xs font-bold text-formex-orange uppercase mb-1 tracking-wide">{course.category?.name}</span>

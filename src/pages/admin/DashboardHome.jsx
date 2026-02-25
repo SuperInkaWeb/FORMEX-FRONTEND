@@ -82,7 +82,7 @@ const DashboardHome = () => {
 
                 <StatCard
                     title="Ingresos (Mes)"
-                    value={`$${stats.income}`}
+                    value={`S/ ${Number(stats.income).toFixed(2)}`}
                     icon={<DollarSign size={28}/>}
                     color="bg-green-500 shadow-green-200"
                     subtext={stats.incomeGrowth}

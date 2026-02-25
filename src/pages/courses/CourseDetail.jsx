@@ -168,7 +168,9 @@ const CourseDetail = () => {
                         {/* Derecha: Tarjeta de Precio */}
                         <div className="lg:col-span-1">
                             <div className="bg-white p-8 rounded-2xl shadow-xl border border-gray-100 sticky top-24">
-                                <div className="text-3xl font-extrabold text-gray-900 mb-6">${course.price}</div>
+                               <div className="text-3xl font-extrabold text-gray-900 mb-6">
+                                S/ {Number(course.price).toFixed(2)}
+                              </div>
 
                                 {/* BOTÓN DINÁMICO SEGÚN AUTENTICACIÓN */}
                                 <button

@@ -29,7 +29,7 @@ const Faq = () => {
         { q: "¿Otorgan certificado al finalizar?", a: "Sí. Al completar el 80% de asistencia y entregar el proyecto final satisfactoriamente, recibes un certificado digital verificado por Formex que puedes añadir a tu LinkedIn." },
         { q: "¿Qué métodos de pago aceptan?", a: "Aceptamos todas las tarjetas de crédito y débito (Visa, Mastercard, Amex), PayPal y transferencias bancarias locales en moneda nacional." },
         { q: "¿Necesito conocimientos previos?", a: "Depende del curso. Los cursos 'Desde Cero' no requieren experiencia previa. Los niveles 'Intermedio' o 'Avanzado' especifican los requisitos en su descripción." },
-        { q: "¿Tienen garantía de devolución?", a: "Sí, ofrecemos una garantía de satisfacción de 7 días. Si después de la primera semana sientes que el curso no es para ti, te devolvemos el 100% de tu dinero sin preguntas." }
+        { q: "¿Puedo ganar recompensas mientras aprendo?", a: "Sí. Con nuestro sistema 'Aprende y Gana', acumulas puntos por evaluaciones, completar cursos, etc. Que luego puedes canjear por descuentos y beneficios en futuros cursos."  }
     ];
 
     return (

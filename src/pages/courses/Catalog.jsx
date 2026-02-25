@@ -108,7 +108,7 @@ const Catalog = () => {
 
                                             <div className="flex justify-between items-center pt-4 border-t border-gray-50 mt-auto">
                         <span className="font-bold text-xl text-gray-900">
-                            ${course.price}
+                        S/ {Number(course.price).toFixed(2)}
                         </span>
                                                 <Link to={`/course/${course.id}`} className="text-sm font-bold text-formex-orange hover:underline">
                                                     Ver Detalles
