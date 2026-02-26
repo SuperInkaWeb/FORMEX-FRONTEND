@@ -46,7 +46,7 @@ const [grades, setGrades] = useState({});
   const downloadPdf = async (evaluationId, title) => {
     try {
       const res = await api.get(
-        `/api/evaluations/${evaluationId}/download`,
+        `/api/courses/${courseId}/evaluations/${evaluationId}/download`,
         { responseType: "blob" }
       );
 

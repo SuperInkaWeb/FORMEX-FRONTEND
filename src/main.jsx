@@ -33,6 +33,8 @@ ReactDOM.createRoot(document.getElementById('root')).render(
                     redirect_uri: `${window.location.origin}/callback`,
                     audience: audience,
                 }}
+                 cacheLocation="localstorage"
+                 useRefreshTokens={true}
             >
                 <AuthProvider>
                     <UserProvider>

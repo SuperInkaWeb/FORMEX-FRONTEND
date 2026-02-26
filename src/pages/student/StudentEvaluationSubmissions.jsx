@@ -82,6 +82,28 @@ const StudentEvaluationSubmissions = () => {
     );
   }
 
+  const downloadSubmission = async (submissionId) => {
+  try {
+    const res = await api.get(
+      `/api/courses/${courseId}/evaluations/${evaluationId}/submissions/download/${submissionId}`,
+      { responseType: "blob" }
+    );
+
+    const blob = new Blob([res.data]);
+    const url = window.URL.createObjectURL(blob);
+
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "mi_entrega.pdf";
+    a.click();
+
+    window.URL.revokeObjectURL(url);
+  } catch (err) {
+    console.error(err);
+    alert("Error descargando archivo");
+  }
+};
+
   return (
     <div className="max-w-4xl mx-auto py-8 px-4">
       {/* HEADER */}
@@ -136,16 +158,14 @@ const StudentEvaluationSubmissions = () => {
           {submission.comment && (
             <p className="text-gray-700 mb-2">{submission.comment}</p>
           )}
-          {submission.fileUrl && (
-            <a
-              href={submission.fileUrl}
-              target="_blank"
-              rel="noreferrer"
-              className="text-blue-600 hover:underline"
-            >
-              Ver archivo enviado
-            </a>
-          )}
+         {submission && (
+  <button
+    onClick={() => downloadSubmission(submission.id)}
+    className="text-blue-600 hover:underline"
+  >
+    Ver archivo enviado
+  </button>
+)}
         </div>
       ) : (
         <p className="text-gray-500">Aún no ha enviado ninguna entrega.</p>

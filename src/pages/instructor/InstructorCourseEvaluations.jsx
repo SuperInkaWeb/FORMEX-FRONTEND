@@ -16,10 +16,10 @@ const InstructorCourseEvaluations = () => {
     pdf: null
   });
 
-const downloadPdf = async (evaluationId, title) => {
+const downloadPdf = async (courseId, evaluationId, title) => {
   try {
     // 👇 ahora solo pasamos evaluationId
-    const res = await EvaluationService.download(evaluationId);
+    const res = await EvaluationService.download(courseId, evaluationId);
 
     const blob = new Blob([res.data], { type: "application/pdf" });
     const url = window.URL.createObjectURL(blob);
@@ -127,7 +127,7 @@ data.append("file", formData.pdf);
           <p className="text-sm text-gray-500">{e.description}</p>
 
           <button
-  onClick={() => downloadPdf(e.id, e.title)}
+  onClick={() => downloadPdf(courseId, e.id, e.title)}
   className="text-orange-600 text-sm hover:underline mt-2 inline-block"
 >
   Descargar examen

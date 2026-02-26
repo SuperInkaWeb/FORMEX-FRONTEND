@@ -83,7 +83,7 @@ const Support = () => {
               </div>
               <div>
                 <h3 className="font-bold text-gray-900 text-lg">Correo Electrónico</h3>
-                <p className="text-gray-500">faridlazo1921@gmail.com</p>
+                <p className="text-gray-500">hola@formex.digital</p>
                 <p className="text-xs text-gray-400 mt-1">Respuesta en aprox. 24 horas</p>
               </div>
             </div>
@@ -94,7 +94,7 @@ const Support = () => {
               </div>
               <div>
                 <h3 className="font-bold text-gray-900 text-lg">Teléfono / WhatsApp</h3>
-                <p className="text-gray-500">+51 999 888 777</p>
+                <p className="text-gray-500">+51 972594948</p>
                 <p className="text-xs text-gray-400 mt-1">Lunes a Viernes, 9am - 6pm</p>
               </div>
             </div>

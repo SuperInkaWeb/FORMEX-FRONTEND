@@ -21,10 +21,10 @@ const EvaluationService = {
     api.delete(`/api/courses/${courseId}/evaluations/${id}`),
 
   // 🔥 nuevo método para descargar PDF
-  download: (evaluationId) =>
-    api.get(`/api/evaluations/${evaluationId}/download`, {
-      responseType: "blob"
-    })
+ download: (courseId, evaluationId) =>
+  api.get(`/api/courses/${courseId}/evaluations/${evaluationId}/download`, {
+    responseType: "blob"
+  })
 };
 
 export default EvaluationService;
