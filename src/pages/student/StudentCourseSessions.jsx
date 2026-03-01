@@ -56,7 +56,7 @@ const [comment, setComment] = useState("");
               <h1 className="text-xl font-bold">
                 {course?.title || 'Cargando...'}
               </h1>
-              <p className="text-xs text-gray-500">Sesiones del curso</p>
+              <p className="text-xs text-gray-700">Sesiones del curso</p>
             </div>
           </div>
 
@@ -90,12 +90,12 @@ const [comment, setComment] = useState("");
         {loading ? (
           <div className="text-center py-20">
             <Loader className="animate-spin mx-auto mb-2" />
-            <p className="text-gray-500">Cargando sesiones...</p>
+            <p className="text-gray-700">Cargando sesiones...</p>
           </div>
         ) : sessions.length === 0 ? (
           <div className="text-center py-20 bg-white rounded-xl border border-dashed border-gray-300">
             <Calendar className="mx-auto text-gray-300 mb-4" size={48} />
-            <p className="text-gray-500">No hay clases programadas aún.</p>
+            <p className="text-gray-700">No hay clases programadas aún.</p>
           </div>
       ) : (
   <>
@@ -109,7 +109,7 @@ const [comment, setComment] = useState("");
             #{i + 1} {s.title}
           </h3>
 
-          <div className="flex flex-wrap gap-4 text-sm text-gray-500">
+          <div className="flex flex-wrap gap-4 text-sm text-gray-700">
             <span className="flex items-center gap-1">
               <Calendar size={14} />
               {new Date(s.startTime).toLocaleDateString()}

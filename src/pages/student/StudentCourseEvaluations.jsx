@@ -85,12 +85,12 @@ const [grades, setGrades] = useState({});
         {loading ? (
           <div className="text-center py-20">
             <Loader className="animate-spin mx-auto mb-2" />
-            <p className="text-gray-500">Cargando evaluaciones...</p>
+            <p className="text-gray-700">Cargando evaluaciones...</p>
           </div>
         ) : evaluations.length === 0 ? (
           <div className="text-center py-20 bg-white rounded-xl border border-dashed">
             <FileText size={48} className="mx-auto text-gray-300 mb-4" />
-            <p className="text-gray-500">
+            <p className="text-gray-700">
               No hay evaluaciones disponibles.
             </p>
           </div>
@@ -106,7 +106,7 @@ const [grades, setGrades] = useState({});
                     <FileText size={16} />
                     {ev.title}
                   </h3>
-                  <p className="text-sm text-gray-500">
+                  <p className="text-sm text-gray-700">
                     {ev.description}
                   </p>
                 </div>

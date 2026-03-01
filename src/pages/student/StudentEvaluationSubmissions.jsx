@@ -110,7 +110,7 @@ const StudentEvaluationSubmissions = () => {
       <div className="flex justify-between items-center mb-6">
         <Link
           to={`/student/course/${courseId}/evaluations`}
-          className="text-gray-500 hover:text-blue-500 flex items-center gap-1"
+          className="text-gray-700 hover:text-blue-500 flex items-center gap-1"
         >
           <ArrowLeft size={16} /> Volver
         </Link>
@@ -168,7 +168,7 @@ const StudentEvaluationSubmissions = () => {
 )}
         </div>
       ) : (
-        <p className="text-gray-500">Aún no ha enviado ninguna entrega.</p>
+        <p className="text-gray-700">Aún no ha enviado ninguna entrega.</p>
       )}
     </div>
   );

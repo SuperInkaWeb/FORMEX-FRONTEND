@@ -43,12 +43,12 @@ const StudentCourseResources = () => {
         {loading ? (
           <div className="text-center py-20">
             <Loader className="animate-spin mx-auto mb-2" />
-            <p className="text-gray-500">Cargando recursos...</p>
+            <p className="text-gray-700">Cargando recursos...</p>
           </div>
         ) : resources.length === 0 ? (
           <div className="text-center py-20 bg-white rounded-xl border border-dashed border-gray-300">
             <BookOpen className="mx-auto text-gray-300 mb-4" size={48} />
-            <p className="text-gray-500">No hay recursos disponibles.</p>
+            <p className="text-gray-700">No hay recursos disponibles.</p>
           </div>
         ) : (
          <ul className="space-y-4">
@@ -62,7 +62,7 @@ const StudentCourseResources = () => {
           <BookOpen size={16} />
           {r.title}
         </h3>
-        <p className="text-sm text-gray-500">{r.description}</p>
+        <p className="text-sm text-gray-700">{r.description}</p>
         <div className="flex gap-3 mt-2">
           <a
             href={r.link}

@@ -64,7 +64,15 @@ useEffect(() => {
         <div className="flex justify-between items-center">
 
           <Link to="/" className="flex items-center group">
-            <img src={logoFormex} alt="Formex Logo" className="h-12 w-auto object-contain" />
+            <div className="p-1 rounded-2xl bg-white shadow-sm group-hover:shadow-md transition-all duration-300">
+              <div className="bg-white rounded-xl border border-gray-100 px-2 py-1">
+                <img
+                  src={logoFormex}
+                  alt="Formex Logo"
+                  className="h-12 w-auto object-contain rounded-lg"
+                />
+              </div>
+            </div>
           </Link>
 
           <div className="hidden lg:flex items-center space-x-8">

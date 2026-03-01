@@ -4,7 +4,7 @@ import { useAuth0 } from "@auth0/auth0-react";
 import StudentCourseService from '../../services/studentCourseService';
 import SessionService from '../../services/sessionService';
 import api from '../../services/api';
-import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import logo from '../../assets/formex_logo.jpg';
 
 const StudentDashboard = () => {
@@ -13,8 +13,6 @@ const [showPointsRules, setShowPointsRules] = useState(false);
 const { user, logout } = useAuth0();
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
-const navigate = useNavigate(); 
-const location = useLocation();
 
 // 🔹 Traer puntos reales desde backend al montar
 useEffect(() => {
@@ -73,15 +71,23 @@ useEffect(() => {
 
       {/* HEADER */}
       <header className="bg-white border-b h-16 px-6 flex justify-between items-center">
-        <div className="flex items-center gap-2">
-        <img 
-        src={logo}
-        alt="Formex Logo"
-        className="w-8 h-8 object-contain"
-        />
-          <span className="font-bold text-lg">Student Panel</span>
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-white border border-gray-200 shadow-sm flex items-center justify-center">
+            <img
+              src={logo}
+              alt="Formex Logo"
+              className="w-7 h-7 object-contain"
+            />
+          </div>
+          <span className="font-bold text-lg tracking-tight">Student Panel</span>
         </div>
 <div className="flex items-center gap-3">
+  <Link
+    to="/catalog"
+    className="hidden md:inline-flex items-center px-3.5 py-1.5 rounded-full border border-formex-orange/30 bg-gradient-to-r from-formex-orange to-orange-500 text-white text-xs font-bold shadow-sm hover:shadow-md hover:brightness-105 transition-all"
+  >
+    Explorar cursos
+  </Link>
   <div className="relative hidden md:block">
     <button
       type="button"
@@ -104,17 +110,27 @@ useEffect(() => {
   </span>
 </div>
 
-  <User size={18} />
-  <div className="leading-tight text-right">
-    <p className="text-sm font-bold text-gray-800">
-      {user?.name || user?.given_name || user?.email}
-    </p>
-    <p className="text-xs text-gray-500">Estudiante</p>
+  <div className="flex items-center gap-3 px-3 py-1.5 bg-gray-50 rounded-full border border-gray-100">
+    <div className="w-8 h-8 bg-purple-100 text-purple-600 rounded-full flex items-center justify-center">
+      <User size={16}/>
+    </div>
+    <div className="hidden md:block text-sm">
+      <p className="font-bold text-gray-800 leading-none">
+        {user?.name || user?.given_name || user?.email}
+      </p>
+      <p className="text-xs text-gray-500">Estudiante</p>
+    </div>
   </div>
   <button
-    onClick={() => navigate('/')}
-    title="Ir al inicio"
-    className="text-gray-500 hover:text-formex-orange transition"
+    onClick={() =>
+      logout({
+        logoutParams: {
+          returnTo: window.location.origin,
+        },
+      })
+    }
+    title="Cerrar sesión"
+    className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
   >
     <LogOut size={18} />
   </button>
@@ -136,7 +152,7 @@ useEffect(() => {
         <BookOpen size={24} />
       </div>
       <div>
-        <p className="text-sm text-gray-500 font-medium">
+        <p className="text-sm text-gray-700 font-medium">
           Cursos Asignados
         </p>
         <h3 className="text-2xl font-bold text-gray-900">
@@ -151,7 +167,7 @@ useEffect(() => {
         <Calendar size={24} />
       </div>
       <div>
-        <p className="text-sm text-gray-500 font-medium">
+        <p className="text-sm text-gray-700 font-medium">
           Próxima Clase
         </p>
         <h3 className="text-lg font-bold text-gray-900">
@@ -176,7 +192,7 @@ useEffect(() => {
         {loading ? (
           <div className="text-center py-20">
             <Loader className="animate-spin mx-auto mb-2" />
-            <p className="text-gray-500">Cargando cursos...</p>
+            <p className="text-gray-700">Cargando cursos...</p>
           </div>
         ) : courses.length > 0 ? (
           <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-6">
@@ -193,12 +209,12 @@ useEffect(() => {
                       className="w-full h-full object-cover rounded-lg"
                     />
                   ) : (
-                    <BookOpen className="text-gray-400" />
+                    <BookOpen className="text-gray-600" />
                   )}
                 </div>
 
                 <h3 className="font-bold text-gray-900">{course.title}</h3>
-                <p className="text-xs text-gray-500">
+                <p className="text-xs text-gray-700">
                   {course.category?.name || 'General'}
                 </p>
            <Link
@@ -211,8 +227,15 @@ useEffect(() => {
             ))}
           </div>
         ) : (
-          <div className="text-center py-20 text-gray-500">
-            Aún no tienes cursos pagados.
+          <div className="text-center py-20 text-gray-700 space-y-3">
+            <p>Aún no tienes cursos pagados.</p>
+            <p className="text-sm text-gray-600">Puedes revisar los cursos disponibles en la opción Explorar cursos.</p>
+            <Link
+              to="/catalog"
+              className="inline-flex items-center px-4 py-2 rounded-lg bg-formex-orange text-white text-sm font-bold hover:bg-orange-600 transition-colors"
+            >
+              Explorar cursos
+            </Link>
           </div>
         )}
       </main>

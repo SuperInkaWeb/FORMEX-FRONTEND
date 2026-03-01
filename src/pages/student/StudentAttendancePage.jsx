@@ -76,7 +76,7 @@ if (!data) {
 
           {/* TEXTO CENTRAL */}
           <div className="absolute inset-0 flex flex-col items-center justify-center">
-            <p className="text-gray-500">Total</p>
+            <p className="text-gray-700">Total</p>
             <p className="text-3xl font-bold">{data.totalSessions}</p>
             <p className="text-green-600 font-bold">
               {data.attendancePercentage.toFixed(1)}%
@@ -90,13 +90,13 @@ if (!data) {
             <p className="text-green-600 font-bold text-xl">
               {data.presentes}
             </p>
-            <p className="text-gray-500">Asistencias</p>
+            <p className="text-gray-700">Asistencias</p>
           </div>
           <div className="text-center">
             <p className="text-red-500 font-bold text-xl">
               {data.ausentes}
             </p>
-            <p className="text-gray-500">Inasistencias</p>
+            <p className="text-gray-700">Inasistencias</p>
           </div>
         </div>
 

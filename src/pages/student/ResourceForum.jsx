@@ -82,7 +82,7 @@ const ResourceForum = () => {
         <section className="bg-white rounded-xl border p-4">
           <h2 className="font-bold mb-3">Mensajes</h2>
           {messages.length === 0 ? (
-            <p className="text-gray-500">Aún no hay mensajes.</p>
+            <p className="text-gray-700">Aún no hay mensajes.</p>
           ) : (
             <ul className="space-y-3">
               {messages.map((m) => (

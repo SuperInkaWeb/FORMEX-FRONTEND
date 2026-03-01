@@ -108,12 +108,14 @@ const InstructorDashboard = () => {
             <header className="bg-white border-b border-gray-200 sticky top-0 z-30">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex justify-between items-center">
                     {/* Logo / Título */}
-                   <div className="flex items-center gap-2">
-    <img 
-        src={logo}
-        alt="Formex Logo"
-        className="w-8 h-8 object-contain"
-    />
+                   <div className="flex items-center gap-3">
+    <div className="w-10 h-10 rounded-xl bg-white border border-gray-200 shadow-sm flex items-center justify-center">
+        <img 
+            src={logo}
+            alt="Formex Logo"
+            className="w-7 h-7 object-contain"
+        />
+    </div>
     <span className="font-bold text-xl text-gray-800 tracking-tight">
         Instructor Panel
     </span>
