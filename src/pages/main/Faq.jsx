@@ -25,8 +25,9 @@ const FaqItem = ({ question, answer }) => {
 
 const Faq = () => {
     const faqs = [
+        { q: "¿Cuáles son los pasos para matricularse?", a: "1) Crea tu cuenta o inicia sesión en Formex. 2) Ve a la opcion Explorar Cursos y elige el curso que deseas. 3) Revisa los detalles del curso. 4) Haz clic en la opcion Comprar Ahora y completa el pago. 5) Recibe la confirmación y accede al curso desde tu Panel de Alumno." },
         { q: "¿Las clases quedan grabadas?", a: "Sí, absolutamente. Entendemos que a veces no puedes asistir. Todas las sesiones en vivo se graban y se suben a tu aula virtual 24 horas después para que puedas repasarlas cuando quieras." },
-        { q: "¿Otorgan certificado al finalizar?", a: "Sí. Al completar el 80% de asistencia y entregar el proyecto final satisfactoriamente, recibes un certificado digital verificado por Formex que puedes añadir a tu LinkedIn." },
+        { q: "¿Otorgan certificado al finalizar?", a: "Sí. Al completar el 80% de asistencia y aprobar las evaluaciones satisfactoriamente, recibes un certificado digital verificado por Formex que puedes añadir a tu LinkedIn." },
         { q: "¿Qué métodos de pago aceptan?", a: "Aceptamos todas las tarjetas de crédito y débito (Visa, Mastercard, Amex), PayPal y transferencias bancarias locales en moneda nacional." },
         { q: "¿Necesito conocimientos previos?", a: "Depende del curso. Los cursos 'Desde Cero' no requieren experiencia previa. Los niveles 'Intermedio' o 'Avanzado' especifican los requisitos en su descripción." },
         { q: "¿Puedo ganar recompensas mientras aprendo?", a: "Sí. Con nuestro sistema 'Aprende y Gana', acumulas puntos por evaluaciones, completar cursos, etc. Que luego puedes canjear por descuentos y beneficios en futuros cursos."  }

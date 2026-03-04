@@ -83,6 +83,12 @@ useEffect(() => {
         </div>
 <div className="flex items-center gap-3">
   <Link
+    to="/support"
+    className="hidden md:inline-flex items-center px-3.5 py-1.5 rounded-full border border-purple-200 bg-purple-50 text-purple-700 text-xs font-bold hover:bg-purple-600 hover:text-white transition-all"
+  >
+    Habla con un asesor
+  </Link>
+  <Link
     to="/catalog"
     className="hidden md:inline-flex items-center px-3.5 py-1.5 rounded-full border border-formex-orange/30 bg-gradient-to-r from-formex-orange to-orange-500 text-white text-xs font-bold shadow-sm hover:shadow-md hover:brightness-105 transition-all"
   >
@@ -201,17 +207,20 @@ useEffect(() => {
                 key={course.id}
                 className="bg-white rounded-xl p-4 border shadow-sm hover:shadow-md transition"
               >
-                <div className="h-32 bg-gray-100 rounded-lg flex items-center justify-center mb-3">
+                <Link
+                  to={`/student/course/${course.id}/sessions`}
+                  className="block h-32 bg-gray-100 rounded-lg flex items-center justify-center mb-3 overflow-hidden"
+                >
                   {course.imageUrl ? (
                     <img
                       src={course.imageUrl}
                       alt={course.title}
-                      className="w-full h-full object-cover rounded-lg"
+                      className="w-full h-full object-cover rounded-lg hover:scale-105 transition-transform"
                     />
                   ) : (
                     <BookOpen className="text-gray-600" />
                   )}
-                </div>
+                </Link>
 
                 <h3 className="font-bold text-gray-900">{course.title}</h3>
                 <p className="text-xs text-gray-700">

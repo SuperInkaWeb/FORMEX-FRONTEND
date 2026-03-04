@@ -81,6 +81,7 @@ useEffect(() => {
             <Link to="/about" className={isActive('/about')}>Nosotros</Link>
             <Link to="/blog" className={isActive('/blog')}>Blog</Link>
             <Link to="/faq" className={isActive('/faq')}>Ayuda</Link>
+            <Link to="/support" className={isActive('/support')}>Contáctanos</Link>
 
 
           {/* Botón Intranet dinámico */}

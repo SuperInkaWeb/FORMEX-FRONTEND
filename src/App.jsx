@@ -26,6 +26,7 @@ import StudentDashboard from "./pages/student/StudentDashboard";
 import StudentAttendancePage from "./pages/student/StudentAttendancePage";
 import StudentCourseResources from "./pages/student/StudentCourseResources";
 import StudentCourseSessions from "./pages/student/StudentCourseSessions";
+import StudentCourseMaterials from "./pages/student/StudentCourseMaterials";
 import StudentResourceForum from "./pages/student/ResourceForum";
 import StudentCourseEvaluations from "./pages/student/StudentCourseEvaluations";
 import StudentEvaluationSubmissions from "./pages/student/StudentEvaluationSubmissions";
@@ -211,6 +212,14 @@ const App = () => {
                         element={
                             <ProtectedRoute allowedRoles={["ROLE_STUDENT"]}>
                                 <StudentCourseSessions />
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route
+                        path="/student/course/:courseId/session/:sessionId/materials"
+                        element={
+                            <ProtectedRoute allowedRoles={["ROLE_STUDENT"]}>
+                                <StudentCourseMaterials />
                             </ProtectedRoute>
                         }
                     />

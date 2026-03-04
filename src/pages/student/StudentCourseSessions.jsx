@@ -105,39 +105,65 @@ const [comment, setComment] = useState("");
           key={s.id}
           className="bg-white p-6 rounded-xl border shadow-sm"
         >
-          <h3 className="font-bold text-lg mb-1">
-            #{i + 1} {s.title}
-          </h3>
+          <div className="flex gap-4">
+            <div className="w-12 h-12 bg-blue-50 text-blue-600 rounded-lg flex items-center justify-center font-bold text-lg flex-shrink-0">
+              #{i + 1}
+            </div>
 
-          <div className="flex flex-wrap gap-4 text-sm text-gray-700">
-            <span className="flex items-center gap-1">
-              <Calendar size={14} />
-              {new Date(s.startTime).toLocaleDateString()}
-            </span>
+            <div>
+              <h3 className="font-bold text-lg mb-1">{s.title}</h3>
+              {s.description && (
+                <p className="text-sm text-gray-600 mb-2">{s.description}</p>
+              )}
 
-            <span className="flex items-center gap-1">
-              <Clock size={14} />
-              {new Date(s.startTime).toLocaleTimeString([], {
-                hour: '2-digit',
-                minute: '2-digit'
-              })}
-            </span>
+              <div className="flex flex-wrap gap-4 text-sm text-gray-700">
+                <span className="flex items-center gap-1">
+                  <Calendar size={14} />
+                  {new Date(s.startTime).toLocaleDateString()}
+                </span>
 
-            {s.meetingLink && (
-              <a
-                href={s.meetingLink}
-                target="_blank"
-                rel="noreferrer"
-                className="flex items-center gap-1 text-blue-600 hover:underline"
-              >
-                <Video size={14} /> Entrar a la clase
-              </a>
-            )}
+                <span className="flex items-center gap-1">
+                  <Clock size={14} />
+                  {new Date(s.startTime).toLocaleTimeString([], {
+                    hour: '2-digit',
+                    minute: '2-digit'
+                  })}
+                </span>
+
+                {s.meetingLink && (
+                  <a
+                    href={s.meetingLink}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="flex items-center gap-1 text-blue-600 hover:underline"
+                  >
+                    <Video size={14} /> Entrar a la clase
+                  </a>
+                )}
+
+                {s.recordingLink ? (
+                  <a
+                    href={s.recordingLink}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="flex items-center gap-1 text-purple-600 hover:underline"
+                  >
+                    <Video size={14} /> Clase grabada
+                  </a>
+                ) : (
+                  <span className="flex items-center gap-1 text-gray-400">
+                    <Video size={14} /> Sin grabacion
+                  </span>
+                )}
+                <Link
+                  to={`/student/course/${courseId}/session/${s.id}/materials`}
+                  className="inline-flex items-center gap-1 bg-blue-500 text-white px-4 py-1.5 rounded-lg hover:bg-blue-600 font-bold text-sm"
+                >
+                 Ver materiales
+                </Link>
+              </div>
+            </div>
           </div>
-
-          {s.description && (
-            <p className="text-sm text-gray-600 mt-2">{s.description}</p>
-          )}
         </div>
       ))}
     </div>

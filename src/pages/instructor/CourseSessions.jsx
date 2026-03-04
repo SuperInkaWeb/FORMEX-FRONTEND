@@ -1,6 +1,6 @@
 ﻿import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { Plus, Trash2, Video, Calendar, ArrowLeft, Clock } from 'lucide-react';
+import { Plus, Trash2, Video, Calendar, ArrowLeft, Clock, Pencil } from 'lucide-react';
 import SessionService from '../../services/sessionService';
 import CourseService from '../../services/courseService';
 
@@ -20,6 +20,10 @@ const CourseSessions = () => {
   const [course, setCourse] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [formData, setFormData] = useState(INITIAL_FORM);
+  const [editingSession, setEditingSession] = useState(null);
+  const [showRecordingModal, setShowRecordingModal] = useState(false);
+  const [recordingSession, setRecordingSession] = useState(null);
+  const [recordingLinkValue, setRecordingLinkValue] = useState('');
 
   const generateHalfHourOptions = () => {
     const opts = [];
@@ -51,8 +55,9 @@ const CourseSessions = () => {
     return end.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   };
 
-  const hasScheduleConflict = (newStart, newEnd) => {
+  const hasScheduleConflict = (newStart, newEnd, ignoreSessionId = null) => {
     return instructorSessions.some((s) => {
+      if (ignoreSessionId && s.id === ignoreSessionId) return false;
       const existingStart = new Date(s.startTime);
       const existingEnd = calculateEndTime(existingStart, s.durationMinutes || 60);
       return newStart < existingEnd && newEnd > existingStart;
@@ -124,28 +129,38 @@ const CourseSessions = () => {
     }
 
     const end = calculateEndTime(start, duration);
-    if (hasScheduleConflict(start, end)) {
+    if (hasScheduleConflict(start, end, editingSession?.id)) {
       alert('Conflicto de agenda: ya tienes otra sesion programada en ese horario.');
       return;
     }
 
-    try {
-      await SessionService.createSession({
-        title: formData.title,
-        description: formData.description,
-        startTime: `${formData.date}T${formData.time}:00`,
-        durationMinutes: duration,
-        meetingLink: formData.meetingLink,
-        courseId
-      });
+   try {
+  const payload = {
+    title: formData.title,
+    description: formData.description,
+    startTime: `${formData.date}T${formData.time}:00`,
+    durationMinutes: duration,
+    meetingLink: formData.meetingLink,
+    recordingLink: editingSession?.recordingLink || null,
+    courseId
+  };
 
-      setShowModal(false);
-      setFormData(INITIAL_FORM);
-      await loadData();
-      alert('Clase programada.');
-    } catch (error) {
-      alert('Error al crear sesion.');
-    }
+  if (editingSession) {
+    await SessionService.updateSession(editingSession.id, payload);
+    alert('Sesion actualizada.');
+  } else {
+    await SessionService.createSession(payload);
+    alert('Clase programada.');
+  }
+
+  setShowModal(false);
+  setFormData(INITIAL_FORM);
+  setEditingSession(null);
+  await loadData();
+
+} catch (error) {
+  alert('Error al guardar sesion.');
+}
   };
 
   const handleDelete = async (id) => {
@@ -154,6 +169,78 @@ const CourseSessions = () => {
       loadData();
     }
   };
+
+  const handleEdit = (session) => {
+  const start = new Date(session.startTime);
+
+  const yyyy = start.getFullYear();
+  const mm = String(start.getMonth() + 1).padStart(2, '0');
+  const dd = String(start.getDate()).padStart(2, '0');
+
+  const hh = String(start.getHours()).padStart(2, '0');
+  const min = String(start.getMinutes()).padStart(2, '0');
+
+  setFormData({
+    title: session.title || '',
+    description: session.description || '',
+    date: `${yyyy}-${mm}-${dd}`,
+    time: `${hh}:${min}`,
+    durationMinutes: session.durationMinutes || 60,
+    meetingLink: session.meetingLink || ''
+  });
+
+  setEditingSession(session);
+  setShowModal(true);
+};
+
+const openRecordingModal = (session) => {
+  setRecordingSession(session);
+  setRecordingLinkValue(session.recordingLink || '');
+  setShowRecordingModal(true);
+};
+
+const handleSaveRecordingLink = async (e) => {
+  e.preventDefault();
+
+  if (!recordingSession) return;
+  if (!recordingLinkValue || !recordingLinkValue.trim()) {
+    alert('Debes ingresar el link de la clase grabada.');
+    return;
+  }
+
+  try {
+    new URL(recordingLinkValue);
+  } catch {
+    alert('El link de la clase grabada no es valido.');
+    return;
+  }
+
+  try {
+    await SessionService.updateSession(recordingSession.id, {
+      title: recordingSession.title,
+      description: recordingSession.description || '',
+      startTime: recordingSession.startTime,
+      durationMinutes: recordingSession.durationMinutes || 60,
+      meetingLink: recordingSession.meetingLink || '',
+      recordingLink: recordingLinkValue.trim()
+    });
+
+    setSessions((prev) =>
+      prev.map((s) =>
+        s.id === recordingSession.id
+          ? { ...s, recordingLink: recordingLinkValue.trim() }
+          : s
+      )
+    );
+
+    setShowRecordingModal(false);
+    setRecordingSession(null);
+    setRecordingLinkValue('');
+    alert('Link de clase grabada guardado.');
+  } catch (error) {
+    alert('Error al guardar el link de clase grabada.');
+  }
+};
 
   return (
     <div className="min-h-screen bg-gray-50 font-sans">
@@ -167,7 +254,11 @@ const CourseSessions = () => {
             </div>
           </div>
           <button
-            onClick={() => setShowModal(true)}
+            onClick={() => {
+              setEditingSession(null);
+              setFormData(INITIAL_FORM);
+              setShowModal(true);
+            }}
             className="bg-formex-orange text-white px-4 py-2 rounded-lg flex items-center gap-2 font-bold hover:bg-orange-600 transition-colors"
           >
             <Plus size={18} /> Nueva sesion
@@ -196,6 +287,7 @@ const CourseSessions = () => {
                     </div>
                     <div>
                       <h3 className="font-bold text-lg text-gray-900">{session.title}</h3>
+                      <p className="text-gray-500 text-sm mt-1">{session.description}</p>
                       <div className="flex flex-wrap gap-4 text-sm text-gray-500 mt-1">
                         <span className="flex items-center gap-1"><Calendar size={14} /> {start.toLocaleDateString()}</span>
                         <span className="flex items-center gap-1">
@@ -206,15 +298,23 @@ const CourseSessions = () => {
                             <Video size={14} /> Link de clase
                           </a>
                         )}
+                        {session.recordingLink ? (
+                          <a href={session.recordingLink} target="_blank" rel="noreferrer" className="flex items-center gap-1 text-purple-600 hover:underline">
+                            <Video size={14} /> Clase grabada
+                          </a>
+                        ) : (
+                          <span className="flex items-center gap-1 text-gray-400">
+                            <Video size={14} /> Sin grabacion
+                          </span>
+                        )}
                       </div>
-                      <p className="text-gray-500 text-sm mt-2">{session.description}</p>
                     </div>
                   </div>
 
                   <div className="flex gap-2 mt-2">
                     <Link
                       to={`/instructor/course/${courseId}/session/${session.id}/materials`}
-                      className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 flex items-center gap-1 font-bold"
+                      className="bg-blue-500 text-white px-3 py-1.5 rounded-lg hover:bg-blue-600 flex items-center gap-1 font-bold text-sm"
                     >
                       <Plus size={16} /> Ver materiales
                     </Link>
@@ -228,6 +328,22 @@ const CourseSessions = () => {
                     >
                       Asistencia
                     </Link>
+
+                    <button
+                      onClick={() => openRecordingModal(session)}
+                      className="mr-2 px-3 py-2 bg-purple-100 text-purple-700 rounded-lg text-sm hover:bg-purple-200 transition-colors whitespace-nowrap"
+                      title="Agregar link de grabacion"
+                    >
+                      {session.recordingLink ? 'Editar link grabado' : 'Agregar link'}
+                    </button>
+
+                    <button
+                   onClick={() => handleEdit(session)}
+                     className="text-gray-400 hover:text-blue-500 p-2 hover:bg-blue-50 rounded transition-colors"
+                   title="Editar sesion"
+                    >
+                    <Pencil size={18} />
+                   </button>
 
                     <button onClick={() => handleDelete(session.id)} className="text-gray-400 hover:text-red-500 p-2 hover:bg-red-50 rounded transition-colors">
                       <Trash2 size={18} />
@@ -243,7 +359,9 @@ const CourseSessions = () => {
       {showModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-2xl p-8 max-w-md w-full">
-            <h3 className="text-xl font-bold mb-4">Programar nueva clase</h3>
+           <h3 className="text-xl font-bold mb-4">
+             {editingSession ? 'Editar sesion' : 'Programar nueva clase'}
+              </h3>
             <form onSubmit={handleSubmit} className="space-y-4">
               <input
                 type="text"
@@ -323,8 +441,58 @@ const CourseSessions = () => {
               />
 
               <div className="flex gap-3 pt-4">
-                <button type="button" onClick={() => setShowModal(false)} className="flex-1 py-2 text-gray-600 hover:bg-gray-100 rounded">Cancelar</button>
-                <button type="submit" className="flex-1 py-2 bg-formex-orange text-white rounded hover:bg-orange-600">Guardar</button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowModal(false);
+                    setEditingSession(null);
+                    setFormData(INITIAL_FORM);
+                  }}
+                  className="flex-1 py-2 text-gray-600 hover:bg-gray-100 rounded"
+                >
+                  Cancelar
+                </button>
+                <button
+               type="submit"
+              className="flex-1 py-2 bg-formex-orange text-white rounded hover:bg-orange-600"
+                >
+              {editingSession ? 'Actualizar' : 'Guardar'}
+             </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {showRecordingModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl p-8 max-w-md w-full">
+            <h3 className="text-xl font-bold mb-4">Agregar link de clase grabada</h3>
+            <form onSubmit={handleSaveRecordingLink} className="space-y-4">
+              <input
+                type="url"
+                required
+                placeholder="https://..."
+                className="w-full border p-2 rounded"
+                value={recordingLinkValue}
+                onChange={(e) => setRecordingLinkValue(e.target.value)}
+              />
+
+              <div className="flex gap-3 pt-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowRecordingModal(false);
+                    setRecordingSession(null);
+                    setRecordingLinkValue('');
+                  }}
+                  className="flex-1 py-2 text-gray-600 hover:bg-gray-100 rounded"
+                >
+                  Cancelar
+                </button>
+                <button type="submit" className="flex-1 py-2 bg-purple-600 text-white rounded hover:bg-purple-700">
+                  Guardar
+                </button>
               </div>
             </form>
           </div>
