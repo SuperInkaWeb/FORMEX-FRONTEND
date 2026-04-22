@@ -18,6 +18,8 @@ import Support from "./pages/main/Support";
 import BecomeInstructor from "./pages/main/BecomeInstructor";
 import Testimonials from "./pages/main/Testimonials";
 import Benefits from "./pages/main/Benefits";
+import Instructors from "./pages/main/Instructors";
+import InstructorProfile from "./pages/main/InstructorProfile";
 import Catalog from "./pages/courses/Catalog";
 import CourseDetail from "./pages/courses/CourseDetail";
 
@@ -103,6 +105,8 @@ const App = () => {
                     <Route path="/faq" element={<Faq />} />
                     <Route path="/support" element={<Support />} />
                     <Route path="/be-instructor" element={<BecomeInstructor />} />
+                    <Route path="/instructors" element={<Instructors />} />
+                    <Route path="/instructor/:id" element={<InstructorProfile />} />
                     <Route path="/testimonials" element={<Testimonials />} />
 
                     {/* 🔹 Rutas de Autenticación (Redirección a Auth0) */}

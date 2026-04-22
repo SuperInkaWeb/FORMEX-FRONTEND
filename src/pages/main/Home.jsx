@@ -57,7 +57,7 @@ const Hero = () => {
 
                         </div>
                         <h1 className="text-5xl lg:text-7xl font-extrabold tracking-tight text-gray-900 mb-6 leading-[1.1]">
-                            Domina el futuro <br/>
+                            Domina el futuro <br />
                             <span className="relative inline-block text-formex-orange">en tiempo real</span>
                         </h1>
                         <p className="text-lg text-gray-500 mb-8 leading-relaxed max-w-lg">
@@ -88,11 +88,10 @@ const Hero = () => {
                                                 setFadeClass('opacity-100');
                                             }, 300);
                                         }}
-                                        className={`w-2 h-2 rounded-full transition-all ${
-                                            index === currentImageIndex 
-                                                ? 'bg-formex-orange w-8' 
+                                        className={`w-2 h-2 rounded-full transition-all ${index === currentImageIndex
+                                                ? 'bg-formex-orange w-8'
                                                 : 'bg-white/50 hover:bg-white/80'
-                                        }`}
+                                            }`}
                                         aria-label={`Ver curso ${index + 1}`}
                                     />
                                 ))}
