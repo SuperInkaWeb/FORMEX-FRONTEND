@@ -44,12 +44,8 @@ useEffect(() => {
 }, [isAuthenticated, userInfo, roleNames, location.pathname, navigate]);
 
 
-  // Mientras Auth0 o el UserContext están cargando, no renderizar nada para evitar lecturas sobre undefined
-  if (isLoading || userContext?.loadingUser) {
-    return null;
-  }
-
-  if (isAuthenticated && !userInfo) return null;
+  // Las validaciones de carga ahora se manejan visualmente en el render para no ocultar toda la barra
+  const isComponentLoading = isLoading || userContext?.loadingUser;
 
   // 🔜 luego desde roles
 
@@ -63,15 +59,13 @@ useEffect(() => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center">
 
-          <Link to="/" className="flex items-center group">
-            <div className="p-1 rounded-2xl bg-white shadow-sm group-hover:shadow-md transition-all duration-300">
-              <div className="bg-white rounded-xl border border-gray-100 px-2 py-1">
+          <Link to="/" className="flex items-center group transition-transform duration-300 hover:scale-105 active:scale-95">
+            <div className="p-0.5 rounded-2xl bg-white shadow-sm group-hover:shadow-md transition-all duration-300 overflow-hidden">
                 <img
                   src={logoFormex}
                   alt="Formex Logo"
-                  className="h-12 w-auto object-contain rounded-lg"
+                  className="h-14 w-auto object-cover rounded-xl"
                 />
-              </div>
             </div>
           </Link>
 
@@ -103,7 +97,11 @@ useEffect(() => {
 
           </div>
 
-          {!isAuthenticated ? (
+          {isComponentLoading ? (
+            <div className="flex items-center justify-center px-6 py-3">
+              <div className="w-5 h-5 border-2 border-formex-orange border-t-transparent rounded-full animate-spin"></div>
+            </div>
+          ) : (!isAuthenticated || !userInfo) ? (
             <>
            <button
             onClick={() => loginWithRedirect()}
@@ -133,6 +131,79 @@ useEffect(() => {
 
         </div>
       </div>
+
+      {/* ── MENÚ MÓVIL DESPLEGABLE ── */}
+      {isOpen && (
+        <div className="lg:hidden bg-white border-t border-gray-100 shadow-lg">
+          <div className="max-w-7xl mx-auto px-4 py-4 flex flex-col gap-1">
+
+            {/* Links de navegación */}
+            {[
+              { to: '/',            label: 'Inicio' },
+              { to: '/catalog',     label: 'Cursos' },
+              { to: '/about',       label: 'Nosotros' },
+              { to: '/blog',        label: 'Blog' },
+              { to: '/instructors', label: 'Instructores' },
+              { to: '/faq',         label: 'Ayuda' },
+              { to: '/support',     label: 'Contáctanos' },
+            ].map(({ to, label }) => (
+              <Link
+                key={to}
+                to={to}
+                onClick={() => setIsOpen(false)}
+                className={`py-3 px-4 rounded-lg text-sm font-medium transition-colors ${
+                  location.pathname === to
+                    ? 'text-formex-orange bg-orange-50 font-bold'
+                    : 'text-gray-600 hover:text-formex-orange hover:bg-gray-50'
+                }`}
+              >
+                {label}
+              </Link>
+            ))}
+
+            {/* Botón Intranet (solo estudiante) */}
+            {isStudent && (
+              <Link
+                to="/student"
+                onClick={() => setIsOpen(false)}
+                className="mt-2 py-3 px-4 rounded-lg text-sm font-bold text-formex-orange bg-formex-orange/10 hover:bg-formex-orange hover:text-white transition-all"
+              >
+                Intranet
+              </Link>
+            )}
+
+            {/* Separador */}
+            <div className="border-t border-gray-100 my-2" />
+
+            {/* Auth */}
+            {isComponentLoading ? (
+              <div className="flex justify-center py-3">
+                <div className="w-5 h-5 border-2 border-formex-orange border-t-transparent rounded-full animate-spin" />
+              </div>
+            ) : (!isAuthenticated || !userInfo) ? (
+              <button
+                onClick={() => { setIsOpen(false); loginWithRedirect(); }}
+                className="w-full py-3 bg-formex-dark text-white font-bold rounded-lg text-sm"
+              >
+                Ingresar / Registrarse
+              </button>
+            ) : (
+              <div className="flex items-center justify-between px-4 py-3 bg-gray-50 rounded-lg">
+                <div className="flex items-center gap-2">
+                  <User size={16} />
+                  <span className="font-bold text-sm">{user?.name}</span>
+                </div>
+                <button
+                  onClick={() => { setIsOpen(false); logout({ logoutParams: { returnTo: window.location.origin } }); }}
+                  className="text-red-500 hover:text-red-700 transition-colors"
+                >
+                  <LogOut size={18} />
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </nav>
   );
 };

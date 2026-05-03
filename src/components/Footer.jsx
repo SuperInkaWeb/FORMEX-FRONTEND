@@ -23,7 +23,6 @@ const Footer = () => {
         { name: 'LinkedIn', url: 'https://www.linkedin.com/company/formex-global/?viewAsMember=true', icon: linkedinIcon, fallback: 'in' },
         { name: 'X', url: 'https://x.com/formexperu', icon: xIcon, fallback: 'x' },
         { name: 'YouTube', url: 'https://www.youtube.com/@Formex-h1v', icon: youtubeIcon, fallback: 'yt' },
-        { name: 'WhatsApp', url: 'https://wa.me/972594948', icon: whatsappIcon, fallback: 'wa' },
     ];
 
     return (

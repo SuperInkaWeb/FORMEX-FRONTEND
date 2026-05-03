@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import CourseService from "../../services/courseService";
 import { Search, UserPlus, Loader } from "lucide-react";
+import { toast } from 'sonner';
 
 const CourseEnrollStudentsPage = () => {
   const { courseId } = useParams();
@@ -26,7 +27,7 @@ const CourseEnrollStudentsPage = () => {
       setFiltered(data);
     } catch (e) {
       console.error(e);
-      alert("Error cargando alumnos");
+      toast.error('Error cargando alumnos');
     } finally {
       setLoading(false);
     }
@@ -49,10 +50,10 @@ const CourseEnrollStudentsPage = () => {
     try {
       setEnrolling(studentId);
      await CourseService.enrollStudent(studentId, courseId);
-      alert("✅ Alumno inscrito");
+      toast.success('Alumno inscrito');
     } catch (e) {
       console.error(e);
-      alert("❌ Error al inscribir");
+      toast.error('Error al inscribir');
     } finally {
       setEnrolling(null);
     }
@@ -63,13 +64,13 @@ const CourseEnrollStudentsPage = () => {
   try {
     setEnrolling(studentId); // puedes reutilizar el estado `enrolling` o crear uno separado
     await CourseService.unenrollStudent(studentId, courseId);
-    alert("✅ Alumno desinscrito");
+    toast.success('Alumno desinscrito');
 
     // 🔹 Actualizar lista de alumnos visibles
     loadStudents();
   } catch (e) {
     console.error(e);
-    alert("❌ Error al desinscribir");
+    toast.error('Error al desinscribir');
   } finally {
     setEnrolling(null);
   }

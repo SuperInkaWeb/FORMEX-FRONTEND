@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { Search } from "lucide-react";
 import CourseService from "../../services/courseService";
 import CertificateService from "../../services/certificateService";
+import { toast } from 'sonner';
 
 const CourseStudentsPage = () => {
   const { courseId } = useParams();
@@ -57,7 +58,7 @@ const handlePaymentStatusChange = async (studentId, newStatus) => {
     );
   } catch (err) {
     console.error(err);
-    alert("❌ Error al actualizar estado de pago");
+    toast.error('Error al actualizar estado de pago');
   }
 };
 
@@ -69,7 +70,7 @@ const handlePaymentStatusChange = async (studentId, newStatus) => {
     const percentage = Number(student.attendancePercentage ?? 0);
 
     if (percentage < 85) {
-      alert("❌ El alumno no cumple el 85% de asistencia");
+      toast.warning('El alumno no cumple el 85% de asistencia');
       return;
     }
 
@@ -92,7 +93,7 @@ const handlePaymentStatusChange = async (studentId, newStatus) => {
       link.click();
     } catch (err) {
       console.error(err);
-      alert("❌ Error al generar certificado");
+      toast.error('Error al generar certificado');
     }
   };
 

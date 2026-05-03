@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'; // Para navegar a Sesiones
 import CourseService from '../../services/courseService';
 import api from '../../services/api';
 import { Plus, Trash2, Edit2, BookOpen, UploadCloud, Loader, Image, Calendar, Users } from 'lucide-react';
+import { toast } from 'sonner';
 import EnrolledStudentsModal from './CourseStudentsPage';
 const user = JSON.parse(localStorage.getItem("user"));
 const isAdmin =
@@ -96,7 +97,7 @@ const openAssignInstructorModal = async (course) => {
 };
 
 const assignInstructor = async (instructorId) => {
-    if (!instructorId) return alert('Selecciona un instructor');
+    if (!instructorId) return toast.warning('Selecciona un instructor');
     setAssigning(instructorId);
 
     try {
@@ -104,7 +105,7 @@ const assignInstructor = async (instructorId) => {
             `/api/courses/${selectedCourse.id}/assign-instructor/${instructorId}`
         );
 
-        alert('Instructor asignado');
+        toast.success('Instructor asignado');
 
         // 🔥 Actualiza SOLO el curso actual
         const assignedInstructor = instructors.find(i => i.id === instructorId);
@@ -125,7 +126,7 @@ const assignInstructor = async (instructorId) => {
 
     } catch (e) {
         console.error('Error assigning instructor', e);
-        alert('Error al asignar instructor');
+        toast.error('Error al asignar instructor');
     } finally {
         setAssigning(null);
     }
@@ -138,7 +139,7 @@ const unassignInstructor = async () => {
 
   try {
     await api.put(`/api/courses/${selectedCourse.id}/unassign-instructor`);
-    alert("Instructor desasignado");
+    toast.success('Instructor desasignado');
 
     // 🔥 Actualiza el curso dentro del modal
     setSelectedCourse(prev => ({
@@ -157,7 +158,7 @@ const unassignInstructor = async () => {
 
   } catch (e) {
     console.error("Error unassigning", e);
-    alert("Error al desasignar instructor");
+    toast.error('Error al desasignar instructor');
   } finally {
     setAssigning(null);
   }
@@ -216,11 +217,11 @@ const unassignInstructor = async () => {
 
     setShowModal(false);
     loadData();
-    alert(editingId ? "Curso actualizado" : "Curso creado");
+    toast.success(editingId ? 'Curso actualizado' : 'Curso creado');
 
   } catch (error) {
     console.error(error);
-    alert("Error al guardar");
+    toast.error('Error al guardar');
   }
 };
 
@@ -230,11 +231,11 @@ const handleDelete = async (courseId) => {
 
   try {
     await api.delete(`/api/courses/${courseId}`);
-    alert("Curso eliminado correctamente");
-    loadData(); // recarga la lista
+    toast.success('Curso eliminado correctamente');
+    loadData();
   } catch (error) {
     console.error(error);
-    alert("Error al eliminar el curso");
+    toast.error('Error al eliminar el curso');
   }
 };
 

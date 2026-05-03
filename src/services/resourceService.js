@@ -16,6 +16,15 @@ const ResourceService = {
             .then(res => res.data);
     },
 
+    // 🔹 Crear recurso con archivo adjunto (preparado para el nuevo backend)
+    createWithFile(courseId, formData) {
+        return api
+            .post(`/api/instructor/courses/${courseId}/resources/with-file`, formData, {
+                headers: { 'Content-Type': 'multipart/form-data' }
+            })
+            .then(res => res.data);
+    },
+
     // 🔹 Eliminar recurso
     delete(courseId, resourceId) {
         return api

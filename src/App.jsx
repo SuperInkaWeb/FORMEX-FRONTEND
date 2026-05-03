@@ -7,6 +7,7 @@ import { useAuth0 } from "@auth0/auth0-react"; // Importamos hook de Auth0
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import ProtectedRoute from "./components/ProtectedRoute";
+import WhatsAppFloating from "./components/WhatsAppFloating";
 // PublicRouteGate ya no es necesario si eliminamos las páginas locales de login
 
 // Páginas principales
@@ -279,6 +280,9 @@ const App = () => {
 />
                 </Routes>
             </div>
+
+            {/* WhatsApp Flotante (Solo en Inicio/Rutas Públicas) */}
+            {!hideLayout && <WhatsAppFloating />}
 
             {/* Footer global */}
             {!hideLayout && <Footer />}

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Mail, Phone, MapPin, Send } from 'lucide-react';
+import { toast } from 'sonner';
 
 
 const Support = () => {
@@ -20,7 +21,7 @@ const Support = () => {
     e.preventDefault();
 
     if (!formData.name || !formData.email || !formData.subject || !formData.message) {
-      alert("❌ Completa todos los campos");
+      toast.warning('Completa todos los campos');
       return;
     }
 
@@ -40,7 +41,7 @@ const Support = () => {
         throw new Error("Error en el servidor");
       }
 
-      alert("✅ Mensaje enviado correctamente");
+      toast.success('Mensaje enviado correctamente');
 
       setFormData({
         name: "",
@@ -51,7 +52,7 @@ const Support = () => {
 
     } catch (error) {
       console.error(error);
-      alert("❌ Error al enviar el mensaje");
+      toast.error('Error al enviar el mensaje');
     } finally {
       setLoading(false);
     }
