@@ -17,6 +17,7 @@ import Blog from "./pages/main/Blog";
 import Faq from "./pages/main/Faq";
 import Support from "./pages/main/Support";
 import BecomeInstructor from "./pages/main/BecomeInstructor";
+import LibroReclamaciones from "./pages/main/LibroReclamaciones";
 import Testimonials from "./pages/main/Testimonials";
 import Benefits from "./pages/main/Benefits";
 import Instructors from "./pages/main/Instructors";
@@ -109,6 +110,7 @@ const App = () => {
                     <Route path="/instructors" element={<Instructors />} />
                     <Route path="/instructor/:id" element={<InstructorProfile />} />
                     <Route path="/testimonials" element={<Testimonials />} />
+                    <Route path="/libro-reclamaciones" element={<LibroReclamaciones />} />
 
                     {/* 🔹 Rutas de Autenticación (Redirección a Auth0) */}
                     <Route path="/login" element={<Auth0Redirect />} />

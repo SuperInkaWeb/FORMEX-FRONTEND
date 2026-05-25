@@ -9,6 +9,7 @@ import xIcon from '../assets/1000_F_712652764_DqFA8x1yJuDxeOlxxwvzdJZGkVdcQONh.j
 import youtubeIcon from '../assets/youtube-icon-free-png.webp';
 import logoFormex from "../assets/formex_logo.jpg";
 
+
 const scrollToTop = () => {
     window.scrollTo(0, 0);
 };
@@ -85,6 +86,7 @@ const Footer = () => {
                         <li><Link to="/support" onClick={scrollToTop} className="hover:text-white transition-colors">Contáctanos</Link></li>
                         <li><Link to="/about" className="hover:text-white transition-colors">Sobre Nosotros</Link></li>
                         <li><Link to="/be-instructor" onClick={scrollToTop} className="hover:text-white transition-colors">Conviértete en Instructor</Link> </li>
+                        <li><Link to="/libro-reclamaciones" onClick={scrollToTop} className="hover:text-white transition-colors">Libro de Reclamaciones</Link></li>
                     </ul>
                 </div>
             </div>
