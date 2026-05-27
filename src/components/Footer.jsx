@@ -86,12 +86,28 @@ const Footer = () => {
                         <li><Link to="/support" onClick={scrollToTop} className="hover:text-white transition-colors">Contáctanos</Link></li>
                         <li><Link to="/about" className="hover:text-white transition-colors">Sobre Nosotros</Link></li>
                         <li><Link to="/be-instructor" onClick={scrollToTop} className="hover:text-white transition-colors">Conviértete en Instructor</Link> </li>
-                        <li><Link to="/libro-reclamaciones" onClick={scrollToTop} className="hover:text-white transition-colors">Libro de Reclamaciones</Link></li>
+                        <li>
+                            <Link to="/libro-reclamaciones" onClick={scrollToTop} className="hover:text-white transition-colors inline-flex items-center gap-2">
+                                <span>Libro de Reclamaciones</span>
+                                <img
+                                    src="/portal-web-libro-reclamacion.png"
+                                    alt="Libro de Reclamaciones"
+                                    className="h-5 w-auto object-contain bg-white p-0.5 rounded shadow-sm shrink-0"
+                                />
+                            </Link>
+                        </li>
                     </ul>
                 </div>
             </div>
-            <div className="max-w-7xl mx-auto px-4 pt-8 border-t border-gray-800 text-center text-gray-500 text-sm">
-                © 2026 Formex Education. Hecho por Qoribex.
+            <div className="max-w-7xl mx-auto px-4 pt-8 border-t border-gray-800 flex flex-col md:flex-row items-center justify-between gap-4 text-gray-500 text-xs font-semibold">
+                <div>
+                    © 2026 Formex Education. Hecho por Qoribex.
+                </div>
+                <div className="flex flex-wrap gap-x-6 gap-y-2 justify-center">
+                    <Link to="/politica-privacidad" onClick={scrollToTop} className="hover:text-gray-300 transition-colors">Política de Privacidad</Link>
+                    <Link to="/politica-cookies" onClick={scrollToTop} className="hover:text-gray-300 transition-colors">Política de Cookies</Link>
+                    <Link to="/terminos-condiciones" onClick={scrollToTop} className="hover:text-gray-300 transition-colors">Términos y Condiciones</Link>
+                </div>
             </div>
         </footer>
     );

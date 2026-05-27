@@ -18,6 +18,9 @@ import Faq from "./pages/main/Faq";
 import Support from "./pages/main/Support";
 import BecomeInstructor from "./pages/main/BecomeInstructor";
 import LibroReclamaciones from "./pages/main/LibroReclamaciones";
+import PoliticaCookies from "./pages/main/PoliticaCookies";
+import PoliticaPrivacidad from "./pages/main/PoliticaPrivacidad";
+import TerminosCondiciones from "./pages/main/TerminosCondiciones";
 import Testimonials from "./pages/main/Testimonials";
 import Benefits from "./pages/main/Benefits";
 import Instructors from "./pages/main/Instructors";
@@ -111,6 +114,9 @@ const App = () => {
                     <Route path="/instructor/:id" element={<InstructorProfile />} />
                     <Route path="/testimonials" element={<Testimonials />} />
                     <Route path="/libro-reclamaciones" element={<LibroReclamaciones />} />
+                    <Route path="/politica-cookies" element={<PoliticaCookies />} />
+                    <Route path="/politica-privacidad" element={<PoliticaPrivacidad />} />
+                    <Route path="/terminos-condiciones" element={<TerminosCondiciones />} />
 
                     {/* 🔹 Rutas de Autenticación (Redirección a Auth0) */}
                     <Route path="/login" element={<Auth0Redirect />} />

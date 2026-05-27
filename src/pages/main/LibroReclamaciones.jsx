@@ -1,97 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { toast } from 'sonner';
-import { Calendar, FileText, ShieldAlert, UploadCloud, Send, ArrowLeft, CheckSquare, Square, ChevronDown } from 'lucide-react';
+import { Calendar, FileText, ShieldAlert, UploadCloud, Send, ArrowLeft, CheckSquare, Square } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
-// ─── Acordeón legal individual ────────────────────────────────────────────────
-const AccordionItem = ({ title, lastUpdate, children }) => {
-  const [open, setOpen] = useState(false);
-  return (
-    <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
-      <button
-        type="button"
-        onClick={() => setOpen(!open)}
-        className="w-full flex items-center justify-between px-6 py-4 text-left hover:bg-gray-50 transition-colors"
-      >
-        <div>
-          <span className="text-sm font-extrabold text-gray-900 block">{title}</span>
-          {lastUpdate && (
-            <span className="text-[10px] text-gray-400 font-semibold">Última actualización: {lastUpdate}</span>
-          )}
-        </div>
-        <ChevronDown
-          size={18}
-          className={`text-gray-400 shrink-0 transition-transform duration-300 ${open ? 'rotate-180' : ''}`}
-        />
-      </button>
-      {open && (
-        <div className="px-6 pb-6 text-[11px] text-gray-500 leading-relaxed text-justify space-y-4 border-t border-gray-100 pt-4">
-          {children}
-        </div>
-      )}
-    </div>
-  );
-};
-
-// ─── Bloque de los 3 documentos legales ──────────────────────────────────────
-const LegalAccordions = () => (
-  <div className="mt-6 space-y-4">
-
-    {/* POLÍTICA DE COOKIES */}
-    <AccordionItem title="Política de Cookies" lastUpdate="14 de mayo de 2026">
-      <p>El presente documento regula el uso de dispositivos de almacenamiento y recuperación de datos ("Cookies") en el portal web FORMEX, propiedad de GLOBAL LEARNING SOLUTIONS EIRL, con RUC N° 20614113872.</p>
-      <p><strong>1. DEFINICIÓN Y FUNCIÓN DE LAS COOKIES</strong><br />Las cookies son archivos de datos que se descargan en el dispositivo del usuario al acceder a determinadas páginas web. Permiten almacenar información sobre hábitos de navegación, tiempo de conexión y preferencias de visualización.</p>
-      <p><strong>2. TIPOLOGÍA DE COOKIES UTILIZADAS</strong><br />
-        <em>A. Por entidad:</em> Cookies Propias (del dominio de LA EMPRESA) y Cookies de Terceros (de servicios externos como analítica, pasarelas de pago y redes sociales).<br />
-        <em>B. Por plazo:</em> Cookies de Sesión (vigentes durante la sesión activa) y Cookies Persistentes (almacenadas durante un período definido).<br />
-        <em>C. Por finalidad:</em> Técnicas (esenciales para el funcionamiento), de Personalización, de Análisis y de Publicidad Comportamental.
-      </p>
-      <p><strong>3. COOKIES DE TERCEROS</strong><br />Se utilizan servicios de analítica web (ej. Google Analytics) y pasarelas de pago externas para garantizar la seguridad de las transacciones financieras.</p>
-      <p><strong>4. OTRAS TECNOLOGÍAS DE SEGUIMIENTO</strong><br />Incluye herramientas de soporte en vivo, scripts de diagnóstico de rendimiento, píxeles de conversión publicitaria y cookies CDN para la distribución de video. Toda nueva tecnología se someterá a los estándares de la Ley N° 29733.</p>
-      <p><strong>5. GESTIÓN Y ELIMINACIÓN</strong><br />El usuario puede configurar su navegador para bloquear o eliminar cookies. La desactivación de cookies técnicas puede impedir el acceso al aula virtual y afectar la emisión de certificados.</p>
-      <p><strong>6. CONSENTIMIENTO</strong><br />Al navegar por FORMEX sin deshabilitar las cookies, el usuario manifiesta su consentimiento para el tratamiento de su información conforme a esta Política.</p>
-      <p><strong>7. ACTUALIZACIÓN</strong><br />LA EMPRESA podrá modificar esta Política en función de nuevas exigencias de la Autoridad Nacional de Protección de Datos Personales o instrucciones de INDECOPI.</p>
-    </AccordionItem>
-
-    {/* POLÍTICA DE PRIVACIDAD */}
-    <AccordionItem title="Política de Privacidad" lastUpdate={null}>
-      <p>GLOBAL LEARNING SOLUTIONS EIRL se compromete con la protección, confidencialidad y seguridad de los datos personales de sus usuarios de la plataforma virtual FORMEX.</p>
-      <p><strong>1. MARCO NORMATIVO Y CONSENTIMIENTO</strong><br />Esta política se rige por la Ley N° 29733 y su Reglamento (D.S. N° 003-2013-JUS). Al registrarse o inscribirse, el usuario otorga su consentimiento libre, previo, expreso e inequívoco para el tratamiento de sus datos personales.</p>
-      <p><strong>2. RECOPILACIÓN DE INFORMACIÓN</strong><br />
-        <em>Directa:</em> Nombre, correo, teléfono, país, contraseña, documentos de identidad (para certificados), perfil académico e interacciones de soporte.<br />
-        <em>Indirecta:</em> Dirección IP, tipo de navegador, sistema operativo, videos vistos, lecciones completadas, resultados de exámenes y tiempo de permanencia en la plataforma.
-      </p>
-      <p><strong>3. DATOS FINANCIEROS</strong><br />LA EMPRESA no almacena datos de tarjetas de crédito o débito. Los pagos se procesan a través de terceros (Niubiz, Izipay, Culqi, PayPal, Stripe) bajo sus propios estándares PCI-DSS.</p>
-      <p><strong>4. FINALIDADES DEL TRATAMIENTO</strong><br />Prestación del servicio educativo, mejora de la experiencia, seguridad y auditoría, comunicaciones comerciales, investigación estadística anónima y uso publicitario de logros (salvo oposición expresa del usuario).</p>
-      <p><strong>5. TRANSFERENCIA TRANSFRONTERIZA</strong><br />Los datos pueden ser procesados por proveedores como AWS, Google Cloud o Microsoft Azure con servidores fuera del Perú, garantizando niveles de protección conforme a la Ley N° 29733.</p>
-      <p><strong>6. SEGURIDAD</strong><br />Implementamos protocolos SSL/TLS y firewalls. LA EMPRESA no se hace responsable de interceptaciones ilegales por terceros fuera de su control.</p>
-      <p><strong>7. DERECHOS ARCO</strong><br />Puede ejercer sus derechos de Acceso, Rectificación, Cancelación y Oposición enviando una solicitud a <strong>hola@formex.digital</strong> con copia de su documento de identidad y el derecho que desea ejercer.</p>
-      <p><strong>8. CONSERVACIÓN DE DATOS</strong><br />Los datos se conservarán durante la relación contractual y el plazo de prescripción legal. La eliminación implica la baja del aula virtual y la pérdida del historial académico no descargado previamente.</p>
-      <p><strong>9. ACTUALIZACIÓN</strong><br />Cualquier cambio sustancial será comunicado vía LA PLATAFORMA o correo electrónico. El uso continuado del servicio implica la aceptación de los nuevos términos.</p>
-    </AccordionItem>
-
-    {/* TÉRMINOS Y CONDICIONES */}
-    <AccordionItem title="Términos y Condiciones" lastUpdate={null}>
-      <p>El sitio web y plataforma FORMEX es propiedad exclusiva de GLOBAL LEARNING SOLUTIONS EIRL, RUC N° 20614113872, domiciliada en Calle Ramón Zavala 790, La Perla, Callao. El simple uso de LA PLATAFORMA implica la aceptación plena de estos Términos. Conforme a la Ley N° 29733, el usuario otorga su consentimiento para que LA EMPRESA trate sus datos personales para fines académicos, de facturación y envío de información comercial. Puede ejercer sus derechos ARCO escribiendo a <strong>hola@formex.digital</strong>.</p>
-      <p><strong>SERVICIO</strong><br />LA PLATAFORMA ofrece acceso a contenidos educativos (texto, imagen, audio y video) mediante la compra de cursos específicos. Los precios son variables, sin afectar a quienes ya adquirieron el servicio previamente.</p>
-      <p><strong>NORMAS DE CONDUCTA</strong><br />El usuario es responsable de su uso de LA PLATAFORMA. Está prohibido dañar o interferir con el sistema, obtener acceso no autorizado, compartir contraseñas, realizar descargas masivas, falsificar identidad o cometer fraude y plagio académico.</p>
-      <p><strong>CONDUCTAS PROHIBIDAS</strong><br />Queda prohibido publicar contenido difamatorio, ilegal, obsceno, pornográfico, con virus o malware, publicidad comercial, contenido político partidista, información inexacta con intención de engañar o que infrinja derechos de autor de terceros.</p>
-      <p><strong>CUENTA DE USUARIO</strong><br />El usuario debe proporcionar información exacta al registrarse, no compartir sus credenciales con terceros y mantener su perfil actualizado. Los perfiles con contenido prohibido serán eliminados de LA PLATAFORMA.</p>
-      <p><strong>PROPIEDAD INTELECTUAL</strong><br />Todo el contenido de LA PLATAFORMA está protegido por derechos de autor de GLOBAL LEARNING SOLUTIONS EIRL o sus licenciadores. Queda prohibida la reproducción, distribución o comunicación pública sin autorización expresa.</p>
-      <p><strong>EXENCIÓN DE RESPONSABILIDAD</strong><br />LA EMPRESA no garantiza resultados laborales específicos derivados del uso de los cursos. El éxito del aprendizaje depende del desempeño individual del estudiante.</p>
-      <p><strong>POLÍTICA DE REEMBOLSOS</strong><br />Por la naturaleza digital del servicio, no se realizan reembolsos una vez efectuado el pago (venta final). La única excepción es el fraude comprobado por robo de tarjeta, que debe reportarse en un máximo de 48 horas adjuntando denuncia policial a <strong>hola@formex.digital</strong>. LA PLATAFORMA puede reprogramar fechas de cursos sin que esto constituya cancelación ni derecho a reembolso.</p>
-      <p><strong>10. LIBRO DE RECLAMACIONES</strong><br />En cumplimiento del Código de Protección y Defensa del Consumidor, LA PLATAFORMA pone a disposición un{' '}
-        <Link to="/libro-reclamaciones" className="text-formex-orange underline font-bold">Libro de Reclamaciones Virtual</Link>.
-        Las quejas o reclamos serán atendidos en los plazos de ley.
-      </p>
-      <p><strong>11. LEY APLICABLE Y JURISDICCIÓN</strong><br />Estos términos se rigen por las leyes de la República del Perú. Para la resolución de controversias, las partes se someten a los Jueces y Tribunales del Distrito Judicial de Lima.</p>
-      <p><strong>12. MODIFICACIONES</strong><br />LA EMPRESA se reserva el derecho de modificar estos Términos en cualquier momento. Las modificaciones entrarán en vigencia desde su publicación en el sitio web.</p>
-    </AccordionItem>
-
-  </div>
-);
-
-// ─────────────────────────────────────────────────────────────────────────────
 const LibroReclamaciones = () => {
   // Fecha actual formateada para visualización
   const [currentDateString, setCurrentDateString] = useState('');
@@ -927,9 +838,6 @@ const LibroReclamaciones = () => {
             La formulación del reclamo no impide acudir a otras vías de solución de controversias ni constituye requisito previo para interponer una denuncia ante el INDECOPI. El proveedor deberá brindar respuesta al reclamo en un plazo no mayor de quince (15) días hábiles improrrogables. Esta cuenta de correo es utilizada únicamente para el envío de constancias de recepción de reclamos, no siendo un medio para la recepción de los mismos; por lo que se solicita no remitir mensajes a dicha cuenta.
           </p>
         </div>
-
-        {/* 📂 Documentos Legales Colapsables */}
-        <LegalAccordions />
 
       </div>
     </div>
